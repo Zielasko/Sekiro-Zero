@@ -43,6 +43,15 @@ globalalloc(GAMESPEED,$32,"sekiro.exe"+B2F2FF)
 GAMESPEED:
 dd (float)1.0
 
+globalalloc(MAX_BULLET_SPEED_MULT,32,"sekiro.exe"+AFE947)
+MAX_BULLET_SPEED_MULT:
+dd (float)1.0
+
+globalalloc(FREEZE_BULLET_TIME,1,"sekiro.exe"+AFD931)
+FREEZE_BULLET_TIME:
+db 00
+
+
 
 //Phantom color
 globalalloc(PHANTOM_COLOR_OPACITY,32,"sekiro.exe"+108230F)

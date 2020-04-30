@@ -43,6 +43,8 @@ if syntaxcheck then return end
   
   
   Game_speed_ptr = getAddress("GAMESPEED")
+  Bullet_speed_ptr = getAddress("MAX_BULLET_SPEED_MULT")
+  Freeze_bullet_time_ptr = getAddress("FREEZE_BULLET_TIME")
   Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
   Light_ptr = getAddress("LIGHT_MULTIPLIER")
@@ -101,6 +103,7 @@ function state_slow()
     light_counter = light_counter + CHRONOS_LIGHT_INTERVAL
   
     end
+    writeBytes(Freeze_bullet_time_ptr,1,1)
     speed = 1/chronos_counter
 end
   
@@ -114,10 +117,11 @@ function state_speed()
         light_counter = light_counter - (CHRONOS_LIGHT_INTERVAL * CHRONOS_WITHDRAWL_MULT)
       end
     else
-     state = 0
-     chronos_counter = 1
+      state = 0
+      chronos_counter = 1
       color_intensity = 0
       light_counter = 1
+      writeBytes(Freeze_bullet_time_ptr,0,1)
     end
 end
   
@@ -286,6 +290,7 @@ function checkChronosInput()
   
     if(speed>0) then
      writeFloat(Game_speed_ptr,speed)
+     writeFloat(Bullet_speed_ptr,speed)
     end
     if(color_intensity<=BRIGHTNESS_MAX) then
        writeFloat(Phantom_param_ptr,color_intensity)
