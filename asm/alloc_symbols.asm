@@ -33,8 +33,13 @@ globalalloc(CFG_CHRONOS_BRIGHTNESS_MAX,4)
 CFG_CHRONOS_BRIGHTNESS_MAX:
 dd (float)2.0
 
+globalalloc(CFG_CHRONOS_MAX,4)
+CFG_CHRONOS_MAX:
+dd #50
 
-
+globalalloc(CFG_USE_MOVEMENT_MULT,1)
+CFG_USE_MOVEMENT_MULT:
+db #1
 
 //Injection symbols
 
@@ -47,9 +52,33 @@ globalalloc(MAX_BULLET_SPEED_MULT,32,"sekiro.exe"+AFE947)
 MAX_BULLET_SPEED_MULT:
 dd (float)1.0
 
+globalalloc(ACCELERATION_MULT,32,"sekiro.exe"+AFE65F)
+ACCELERATION_MULT:
+dd (float)1.0
+
+globalalloc(ACCELERATION_ADD,32,"sekiro.exe"+AFE65F)
+ACCELERATION_ADD:
+dd (float)0.6
+
 globalalloc(FREEZE_BULLET_TIME,1,"sekiro.exe"+AFD931)
 FREEZE_BULLET_TIME:
 db 00
+
+globalalloc(RELEASE_BULLET_TIME,1,"sekiro.exe"+AFE65F)
+RELEASE_BULLET_TIME:
+db 00
+
+globalalloc(ZERO,32,"sekiro.exe"+AFE65F)
+ZERO:
+dd (float)0.0
+
+globalalloc(ALMOST_ZERO,32,"sekiro.exe"+AFE65F)
+ALMOST_ZERO:
+dd (float)0.1
+
+globalalloc(MOVEMENT_MULT,32,"sekiro.exe"+AFE65F)
+MOVEMENT_MULT:
+dd (float)1.0
 
 
 

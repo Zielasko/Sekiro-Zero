@@ -2,7 +2,6 @@
 {$lua}
 if syntaxcheck then return end
 
-  CHRONOS_COUNTER_MAX = 50
   CHRONOS_LIGHT_MIN = 0.35
 
   chronos_counter = 1
@@ -10,8 +9,10 @@ if syntaxcheck then return end
   light_counter = 1
 
   --read config
+  CHRONOS_COUNTER_MAX = readInteger(getAddress("CFG_CHRONOS_MAX"))
   enable_instant_slash = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH"),1)
   enable_slash_sfx = readBytes(getAddress("CFG_ENABLE_SLASH_SFX"),1)
+  enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -45,7 +46,10 @@ if syntaxcheck then return end
   Game_speed_ptr = getAddress("GAMESPEED")
   Bullet_speed_ptr = getAddress("MAX_BULLET_SPEED_MULT")
   Freeze_bullet_time_ptr = getAddress("FREEZE_BULLET_TIME")
+  Bullet_accel_ptr = getAddress("ACCELERATION_MULT")
+  Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME")
   Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
+  Movement_mult_ptr = getAddress("MOVEMENT_MULT")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
   Light_ptr = getAddress("LIGHT_MULTIPLIER")
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
@@ -116,12 +120,16 @@ function state_speed()
      if(light_counter>1) then
         light_counter = light_counter - (CHRONOS_LIGHT_INTERVAL * CHRONOS_WITHDRAWL_MULT)
       end
+     writeBytes(Release_bullet_time_ptr,1,1)
+     writeFloat(Bullet_accel_ptr,chronos_counter*2*CHRONOS_WITHDRAWL_MULT*CHRONOS_WITHDRAWL_MULT)
     else
       state = 0
       chronos_counter = 1
       color_intensity = 0
       light_counter = 1
       writeBytes(Freeze_bullet_time_ptr,0,1)
+      writeBytes(Release_bullet_time_ptr,0,1)
+      writeFloat(Bullet_accel_ptr,1)
     end
 end
 
@@ -291,6 +299,9 @@ function checkChronosInput()
     if(speed>0) then
      writeFloat(Game_speed_ptr,speed)
      writeFloat(Bullet_speed_ptr,speed)
+     if(enable_airtime>0) then
+        writeFloat(Movement_mult_ptr,speed)
+     end
     end
     if(color_intensity<=BRIGHTNESS_MAX) then
        writeFloat(Phantom_param_ptr,color_intensity)
