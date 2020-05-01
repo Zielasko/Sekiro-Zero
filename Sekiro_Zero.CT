@@ -60,8 +60,13 @@ globalalloc(CFG_CHRONOS_BRIGHTNESS_MAX,4)
 CFG_CHRONOS_BRIGHTNESS_MAX:
 dd (float)2.0
 
+globalalloc(CFG_CHRONOS_MAX,4)
+CFG_CHRONOS_MAX:
+dd #50
 
-
+globalalloc(CFG_USE_MOVEMENT_MULT,1)
+CFG_USE_MOVEMENT_MULT:
+db #1
 
 //Injection symbols
 
@@ -74,11 +79,33 @@ globalalloc(MAX_BULLET_SPEED_MULT,32,"sekiro.exe"+AFE947)
 MAX_BULLET_SPEED_MULT:
 dd (float)1.0
 
+globalalloc(ACCELERATION_MULT,32,"sekiro.exe"+AFE65F)
+ACCELERATION_MULT:
+dd (float)1.0
+
+globalalloc(ACCELERATION_ADD,32,"sekiro.exe"+AFE65F)
+ACCELERATION_ADD:
+dd (float)0.6
+
 globalalloc(FREEZE_BULLET_TIME,1,"sekiro.exe"+AFD931)
 FREEZE_BULLET_TIME:
 db 00
 
+globalalloc(RELEASE_BULLET_TIME,1,"sekiro.exe"+AFE65F)
+RELEASE_BULLET_TIME:
+db 00
 
+globalalloc(ZERO,32,"sekiro.exe"+AFE65F)
+ZERO:
+dd (float)0.0
+
+globalalloc(ALMOST_ZERO,32,"sekiro.exe"+AFE65F)
+ALMOST_ZERO:
+dd (float)0.1
+
+globalalloc(MOVEMENT_MULT,32,"sekiro.exe"+AFE65F)
+MOVEMENT_MULT:
+dd (float)1.0
 
 //Phantom color
 globalalloc(PHANTOM_COLOR_OPACITY,32,"sekiro.exe"+108230F)
@@ -140,6 +167,8 @@ dealloc("PHANTOM_EDGE_GREEN_W")
 dealloc("PHANTOM_DIFF")
 dealloc("LIGHT_MULTIPLIER")
 dealloc("Debug_SpEffect_Type")
+dealloc("MAX_BULLET_SPEED_MULT")
+dealloc("FREEZE_BULLET_TIME")
 
 unregisterSymbol("GAMESPEED")
 unregisterSymbol("PHANTOM_COLOR_OPACITY")
@@ -150,6 +179,8 @@ unregisterSymbol("PHANTOM_EDGE_GREEN_W")
 unregisterSymbol("PHANTOM_DIFF")
 unregisterSymbol("LIGHT_MULTIPLIER")
 unregisterSymbol("Debug_SpEffect_Type")
+unregisterSymbol("MAX_BULLET_SPEED_MULT")
+unregisterSymbol("FREEZE_BULLET_TIME")
 </AssemblerScript>
           <CheatEntries>
             <CheatEntry>
@@ -373,6 +404,17 @@ unregisterSymbol("Debug_SpEffect_Type")
                   <VariableType>Float</VariableType>
                   <Address>CFG_CHRONOS_BRIGHTNESS_MAX</Address>
                 </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106095</ID>
+                  <Description>"CFG_CHRONOS_MAX"</Description>
+                  <DropDownList DisplayValueAsItem="1">0.200000003:FAINT
+1:MEDIUM
+2:DEFAULT
+</DropDownList>
+                  <Color>FF0000</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>CFG_CHRONOS_MAX</Address>
+                </CheatEntry>
               </CheatEntries>
             </CheatEntry>
             <CheatEntry>
@@ -393,7 +435,6 @@ unregisterSymbol("Debug_SpEffect_Type")
 {$lua}
 if syntaxcheck then return end
 
-  CHRONOS_COUNTER_MAX = 50
   CHRONOS_LIGHT_MIN = 0.35
 
   chronos_counter = 1
@@ -401,8 +442,10 @@ if syntaxcheck then return end
   light_counter = 1
 
   --read config
+  CHRONOS_COUNTER_MAX = readInteger(getAddress("CFG_CHRONOS_MAX"))
   enable_instant_slash = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH"),1)
   enable_slash_sfx = readBytes(getAddress("CFG_ENABLE_SLASH_SFX"),1)
+  enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -436,7 +479,10 @@ if syntaxcheck then return end
   Game_speed_ptr = getAddress("GAMESPEED")
   Bullet_speed_ptr = getAddress("MAX_BULLET_SPEED_MULT")
   Freeze_bullet_time_ptr = getAddress("FREEZE_BULLET_TIME")
+  Bullet_accel_ptr = getAddress("ACCELERATION_MULT")
+  Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME")
   Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
+  Movement_mult_ptr = getAddress("MOVEMENT_MULT")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
   Light_ptr = getAddress("LIGHT_MULTIPLIER")
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
@@ -507,12 +553,16 @@ function state_speed()
      if(light_counter&gt;1) then
         light_counter = light_counter - (CHRONOS_LIGHT_INTERVAL * CHRONOS_WITHDRAWL_MULT)
       end
+     writeBytes(Release_bullet_time_ptr,1,1)
+     writeFloat(Bullet_accel_ptr,chronos_counter*2*CHRONOS_WITHDRAWL_MULT*CHRONOS_WITHDRAWL_MULT)
     else
       state = 0
       chronos_counter = 1
       color_intensity = 0
       light_counter = 1
       writeBytes(Freeze_bullet_time_ptr,0,1)
+      writeBytes(Release_bullet_time_ptr,0,1)
+      writeFloat(Bullet_accel_ptr,1)
     end
 end
 
@@ -682,6 +732,9 @@ function checkChronosInput()
     if(speed&gt;0) then
      writeFloat(Game_speed_ptr,speed)
      writeFloat(Bullet_speed_ptr,speed)
+     if(enable_airtime&gt;0) then
+        writeFloat(Movement_mult_ptr,speed)
+     end
     end
     if(color_intensity&lt;=BRIGHTNESS_MAX) then
        writeFloat(Phantom_param_ptr,color_intensity)
@@ -1525,6 +1578,215 @@ address:
 dealloc(newmem)
 </AssemblerScript>
                 </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106090</ID>
+                  <Description>"Bullet velocity in Range"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{
+  Bullet acceleration in Range
+}
+
+define(address,"sekiro.exe"+AFE65F)
+define(bytes,F3 44 0F 10 48 2C)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"sekiro.exe"+AFE65F)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  pushf
+  movss xmm9,[rax+2C]
+  cmp byte ptr [RELEASE_BULLET_TIME],0
+  je dont_speed_up
+  addps xmm9,[ACCELERATION_ADD]
+  mulss xmm9,[ACCELERATION_MULT]
+
+dont_speed_up:
+  popf
+  jmp return
+
+address:
+  jmp newmem
+  nop
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+
+dealloc(newmem)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1337106091</ID>
+                      <Description>"RELEASE_BULLET_TIME"</Description>
+                      <VariableType>Byte</VariableType>
+                      <Address>RELEASE_BULLET_TIME</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337106092</ID>
+                      <Description>"ACCELERATION_MULT"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>ACCELERATION_MULT</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106089</ID>
+                  <Description>"Bullet velocity out of range"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{
+  Bullet acceleration out of range
+}
+
+define(address,"sekiro.exe"+AFE692)
+define(bytes,F3 44 0F 10 48 30)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"sekiro.exe"+AFE692)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  pushf
+  movss xmm9,[rax+30]
+  cmp byte ptr [RELEASE_BULLET_TIME],0
+  je dont_speed_up_oor
+  addps xmm9,[ACCELERATION_ADD]
+  mulss xmm9,[ACCELERATION_MULT]
+
+dont_speed_up_oor:
+  popf
+  jmp return
+
+address:
+  jmp newmem
+  nop
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+
+dealloc(newmem)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106088</ID>
+                  <Description>"Bullet min velocity"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{
+  Bullet min velocity
+}
+
+define(address,"sekiro.exe"+AFE962)
+define(bytes,F3 0F 10 78 38)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"sekiro.exe"+AFE962)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movss xmm7,[rax+38]
+  pushf
+  cmp byte ptr[FREEZE_BULLET_TIME],0
+  je dont_remove_min_speed
+  movss xmm7,[ALMOST_ZERO]
+
+dont_remove_min_speed:
+  popf
+  jmp return
+
+address:
+  jmp newmem
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+
+dealloc(newmem)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106103</ID>
+                  <Description>"Movement Distance Add"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{
+  coords in xmm6
+}
+
+define(address,"sekiro.exe"+BADBCA)
+define(bytes,F3 0F 10 86 0C 09 00 00)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"sekiro.exe"+BADBCA)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movss xmm0,[rsi+0000090C]
+  mulps xmm0,[MOVEMENT_MULT]
+  jmp return
+
+address:
+  jmp newmem
+  nop 3
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+
+dealloc(newmem)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1337106107</ID>
+                      <Description>"CFG_USE_MOVEMENT_MULT"</Description>
+                      <VariableType>Byte</VariableType>
+                      <Address>CFG_USE_MOVEMENT_MULT</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337106106</ID>
+                      <Description>"MOVEMENT_MULT"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>MOVEMENT_MULT</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
               </CheatEntries>
             </CheatEntry>
             <CheatEntry>
@@ -1644,6 +1906,7 @@ dealloc(newmem)
 2:Add_Effect_Alternate
 3:RemoveEffect
 </DropDownList>
+                  <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>Debug_SpEffect_Type</Address>
                 </CheatEntry>
@@ -1729,6 +1992,7 @@ dealloc(newmem)
 3501001:execute marker below
 3501020:poise buff
 </DropDownList>
+                  <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>sekiro.exe+3B68E30</Address>
                   <Offsets>
@@ -1736,6 +2000,20 @@ dealloc(newmem)
                     <Offset>11D0</Offset>
                     <Offset>88</Offset>
                   </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106094</ID>
+                  <Description>"ZERO"</Description>
+                  <Color>C0C0C0</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>ZERO</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106093</ID>
+                  <Description>"ALMOST_ZERO"</Description>
+                  <Color>C0C0C0</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>ALMOST_ZERO</Address>
                 </CheatEntry>
               </CheatEntries>
             </CheatEntry>
