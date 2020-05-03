@@ -8,11 +8,13 @@ if syntaxcheck then return end
   speed = 0.03
   light_counter = 1
 
+
   --read config
   CHRONOS_COUNTER_MAX = readInteger(getAddress("CFG_CHRONOS_MAX"))
   enable_instant_slash = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH"),1)
   enable_slash_sfx = readBytes(getAddress("CFG_ENABLE_SLASH_SFX"),1)
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
+  enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -56,7 +58,8 @@ if syntaxcheck then return end
   SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
 
-  errorOnLookupFailure(false) --turn off Errors that arise during Loading screens
+  --turn off Errors that arise during Loading screens and instead return int
+  errorOnLookupFailure(false) 
 
   -- Default state, ready to activate chronos mode or instant attack/dash
 function state_ready()
@@ -106,9 +109,14 @@ function state_slow()
     color_intensity = color_intensity + CHRONOS_COLOR_INTERVAL
     light_counter = light_counter + CHRONOS_LIGHT_INTERVAL
 
+  else
+    if(enable_player_during_stopped_time>0) then
+        writeFloat(Player_speed_ptr, chronos_counter*0.8)
     end
+  end
     writeBytes(Freeze_bullet_time_ptr,1,1)
     speed = 1/chronos_counter
+
 end
 
 --ending chronos mode
@@ -130,6 +138,8 @@ function state_speed()
       writeBytes(Freeze_bullet_time_ptr,0,1)
       writeBytes(Release_bullet_time_ptr,0,1)
       writeFloat(Bullet_accel_ptr,1)
+
+      writeFloat(Player_speed_ptr, 1)
     end
 end
 

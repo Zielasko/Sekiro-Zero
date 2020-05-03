@@ -1,6 +1,6 @@
 [ENABLE]
 {$asm}
-//config symbols
+/* config symbols */
 globalalloc(CFG_ENABLE_INSTANT_SLASH,1)
 CFG_ENABLE_INSTANT_SLASH:
 db 0x01
@@ -37,11 +37,19 @@ globalalloc(CFG_CHRONOS_MAX,4)
 CFG_CHRONOS_MAX:
 dd #50
 
+
+/* CFG_USE_MOVEMENT_MULT and CFG_ENABLE_PLAYER_MOVE are mutually exclusive */
 globalalloc(CFG_USE_MOVEMENT_MULT,1)
 CFG_USE_MOVEMENT_MULT:
 db #1
 
-//Injection symbols
+globalalloc(CFG_ENABLE_PLAYER_MOVE,1)
+CFG_USE_MOVEMENT_MULT:
+db #0
+
+
+
+/* Injection symbols */
 
 
 globalalloc(GAMESPEED,$32,"sekiro.exe"+B2F2FF)
@@ -80,8 +88,6 @@ globalalloc(MOVEMENT_MULT,32,"sekiro.exe"+AFE65F)
 MOVEMENT_MULT:
 dd (float)1.0
 
-
-
 //Phantom color
 globalalloc(PHANTOM_COLOR_OPACITY,32,"sekiro.exe"+108230F)
 PHANTOM_COLOR_OPACITY:
@@ -118,12 +124,14 @@ dd (float)1.0
 LIGHT_MULTIPLIER+8:
 dd (float)1.0
 
-LIGHT_MULTIPLIER+c:
+LIGHT_MULTIPLIER+0xc:
 dd (float)1.0
 
-//Argument for the debug_add_spEffect function
-//sets wether the effect is aplied or removed
-//The SpEffect Param ID that is applied/removed on attacks has to be set at a special address
+/*
+  Argument for the debug_add_spEffect function
+  sets wether the effect is aplied or removed
+  The SpEffect Param ID that is applied/removed on attacks has to be set at a special address 
+*/
 globalalloc(Debug_SpEffect_Type,4)
 Debug_SpEffect_Type:
 dd 0xFFFF
