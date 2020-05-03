@@ -71,7 +71,7 @@ CFG_USE_MOVEMENT_MULT:
 db #1
 
 globalalloc(CFG_ENABLE_PLAYER_MOVE,1)
-CFG_USE_MOVEMENT_MULT:
+CFG_ENABLE_PLAYER_MOVE:
 db #0
 
 
@@ -936,9 +936,12 @@ code:
   mov eax,[r8+04]
   pushf
   cmp eax,#0
-  je set_default_and_exit
+  je set_default_ppr_and_exit
+  cmp eax,#1
+  je check_is_chronos_active
   cmp eax,#-1 /* check if is already uses a phantom param || cmp eax,#74 exclude special? npcs phantoms*/
   jne exit_ppr
+check_is_chronos_active:
   cmp [PHANTOM_COLOR_OPACITY],#0 /*check if chronos is active*/
   je reset_ppr_and_exit
   mov eax,#1  /* values &gt; 0 make some phantom enemies invisible */
@@ -951,6 +954,7 @@ set_default_ppr_and_exit:
 reset_ppr_and_exit:
   mov eax,#0
 exit_ppr:
+  popf
   mov [rsp],eax
   jmp return
 
@@ -958,7 +962,6 @@ getPhantomID:
   jmp newmem
   nop 2
 return:
-  popf
 
 [DISABLE]
 
@@ -2069,7 +2072,7 @@ ret
           <CheatEntries>
             <CheatEntry>
               <ID>1337105979</ID>
-              <Description>"10 x Shot damage"</Description>
+              <Description>"[ x Shot damage]"</Description>
               <LastState/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>{
@@ -2089,13 +2092,13 @@ label(code)
 label(return)
 
 DMGCUTRATE_REPLACE:
-dd (float)10.0
+dd (float)2.0
 
 newmem:
 
 code:
   movss xmm0,[rax+20]
-  molss xmm0,[DMGCUTRATE_REPLACE]
+  mulss xmm0,[DMGCUTRATE_REPLACE]
   ret
 
 address:
@@ -2113,7 +2116,7 @@ dealloc(newmem)
             </CheatEntry>
             <CheatEntry>
               <ID>1337105960</ID>
-              <Description>"10 x Slash damage"</Description>
+              <Description>"[ x Slash damage]"</Description>
               <LastState/>
               <Color>8000FF</Color>
               <VariableType>Auto Assembler Script</VariableType>
@@ -2134,7 +2137,7 @@ label(code)
 label(return)
 
 SLASHCUTRATE_REPLACE:
-dd (float)10.0
+dd (float)2.0
 
 newmem:
 
@@ -2161,11 +2164,7 @@ dealloc(newmem)
               <Options moHideChildren="1"/>
               <LastState/>
               <VariableType>Auto Assembler Script</VariableType>
-              <AssemblerScript>{ Game   : sekiro.exe
-  Version: 
-  Date   : 2020-04-18
-  Author : JZ
-
+              <AssemblerScript>{
   Changes how certain buff and fog sfx is rendered
   This makes divine confetti look cooler
 }
@@ -2247,83 +2246,127 @@ dealloc(newmem)
   <UserdefinedSymbols>
     <SymbolEntry>
       <Name>CFG_ENABLE_INSTANT_SLASH</Name>
-      <Address>00880000</Address>
+      <Address>04F40000</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_SLASH_SFX</Name>
-      <Address>00880010</Address>
+      <Address>04F40010</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_TIMER_INTERVAL</Name>
-      <Address>00880020</Address>
+      <Address>04F40020</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MULT</Name>
-      <Address>00880030</Address>
+      <Address>04F40030</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_WITHDRAWL_MULT</Name>
-      <Address>00880040</Address>
+      <Address>04F40040</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_KEYBOARD_KEY</Name>
-      <Address>00880050</Address>
+      <Address>04F40050</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_CONTROLLER_BUTTON</Name>
-      <Address>00880060</Address>
+      <Address>04F40060</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_BRIGHTNESS_MAX</Name>
-      <Address>00880070</Address>
+      <Address>04F40070</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>GAMESPEED</Name>
-      <Address>00880080</Address>
+      <Address>04F400B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MAX_BULLET_SPEED_MULT</Name>
-      <Address>008800C0</Address>
+      <Address>04F400F0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>FREEZE_BULLET_TIME</Name>
-      <Address>008800E0</Address>
+      <Address>04F40150</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_COLOR_OPACITY</Name>
-      <Address>008800F0</Address>
+      <Address>04F401D0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_LIGHT_OPACITY</Name>
-      <Address>00880110</Address>
+      <Address>04F401F0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RED_W</Name>
-      <Address>00880130</Address>
+      <Address>04F40210</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_BLUE_W</Name>
-      <Address>00880140</Address>
+      <Address>04F40220</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_GREEN_W</Name>
-      <Address>00880150</Address>
+      <Address>04F40230</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_DIFF</Name>
-      <Address>00880160</Address>
+      <Address>04F40240</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>LIGHT_MULTIPLIER</Name>
-      <Address>00880170</Address>
+      <Address>04F40250</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>Debug_SpEffect_Type</Name>
-      <Address>008801B0</Address>
+      <Address>04F40290</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>light_matrix3</Name>
       <Address>008801C0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>CFG_CHRONOS_MAX</Name>
+      <Address>04F40080</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>CFG_USE_MOVEMENT_MULT</Name>
+      <Address>04F40090</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>CFG_ENABLE_PLAYER_MOVE</Name>
+      <Address>04F400A0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>ACCELERATION_MULT</Name>
+      <Address>04F40110</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>ACCELERATION_ADD</Name>
+      <Address>04F40130</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>RELEASE_BULLET_TIME</Name>
+      <Address>04F40160</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>ZERO</Name>
+      <Address>04F40170</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>ALMOST_ZERO</Name>
+      <Address>04F40190</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>MOVEMENT_MULT</Name>
+      <Address>04F401B0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>DMGCUTRATE_REPLACE</Name>
+      <Address>04F402A0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>SLASHCUTRATE_REPLACE</Name>
+      <Address>04F402C0</Address>
     </SymbolEntry>
   </UserdefinedSymbols>
 </CheatTable>

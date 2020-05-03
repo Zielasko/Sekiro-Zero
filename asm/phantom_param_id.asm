@@ -20,12 +20,15 @@ code:
   mov eax,[r8+04]
   pushf
   cmp eax,#0
-  je set_default_and_exit
+  je set_default_ppr_and_exit
+  cmp eax,#1
+  je check_is_chronos_active
   cmp eax,#-1 /* check if is already uses a phantom param || cmp eax,#74 exclude special? npcs phantoms*/
   jne exit_ppr
+check_is_chronos_active:
   cmp [PHANTOM_COLOR_OPACITY],#0 /*check if chronos is active*/
   je reset_ppr_and_exit
-  mov eax,#1  /* values > 0 make some phantom enemies invisible */ 
+  mov eax,#1  /* values > 0 make some phantom enemies invisible */
   jmp exit_ppr
 
 set_default_ppr_and_exit:
@@ -35,6 +38,7 @@ set_default_ppr_and_exit:
 reset_ppr_and_exit:
   mov eax,#0
 exit_ppr:
+  popf
   mov [rsp],eax
   jmp return
 
@@ -42,7 +46,6 @@ getPhantomID:
   jmp newmem
   nop 2
 return:
-  popf
 
 [DISABLE]
 
