@@ -8,13 +8,11 @@ if syntaxcheck then return end
   speed = 0.03
   light_counter = 1
 
-
   --read config
   CHRONOS_COUNTER_MAX = readInteger(getAddress("CFG_CHRONOS_MAX"))
   enable_instant_slash = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH"),1)
   enable_slash_sfx = readBytes(getAddress("CFG_ENABLE_SLASH_SFX"),1)
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
-  enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -26,6 +24,7 @@ if syntaxcheck then return end
   CHRONOS_KEYBOARD_KEY = readInteger(getAddress("CFG_CHRONOS_KEYBOARD_KEY"))
   CHRONOS_CONTROLLER_BUTTON= readInteger(getAddress("CFG_CHRONOS_CONTROLLER_BUTTON"))
   BRIGHTNESS_MAX = readFloat(getAddress("CFG_CHRONOS_BRIGHTNESS_MAX"))
+  SLOW_MIN = readFloat(getAddress("CFG_CHRONOS_SLOW_MIN"))
 
 
   CHRONOS_COUNTER_INTERVAL = 0.5 * (TIMER_INTERVAL/10) * CHRONOS_MULT
@@ -58,8 +57,13 @@ if syntaxcheck then return end
   SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
 
-  --turn off Errors that arise during Loading screens and instead return int
-  errorOnLookupFailure(false) 
+  errorOnLookupFailure(false) --turn off Errors that arise during Loading screens
+
+
+
+  if(SLOW_MIN>1) then -- maybe add some more sanity checks (but if you want a broken game i won't stop you)
+    print("Please choose a minimum chronos slowdown value < 1")
+  end
 
   -- Default state, ready to activate chronos mode or instant attack/dash
 function state_ready()
@@ -109,14 +113,9 @@ function state_slow()
     color_intensity = color_intensity + CHRONOS_COLOR_INTERVAL
     light_counter = light_counter + CHRONOS_LIGHT_INTERVAL
 
-  else
-    if(enable_player_during_stopped_time>0) then
-        writeFloat(Player_speed_ptr, chronos_counter*0.8)
     end
-  end
     writeBytes(Freeze_bullet_time_ptr,1,1)
     speed = 1/chronos_counter
-
 end
 
 --ending chronos mode
@@ -138,8 +137,6 @@ function state_speed()
       writeBytes(Freeze_bullet_time_ptr,0,1)
       writeBytes(Release_bullet_time_ptr,0,1)
       writeFloat(Bullet_accel_ptr,1)
-
-      writeFloat(Player_speed_ptr, 1)
     end
 end
 
@@ -155,41 +152,32 @@ function read_controller_chronos_trigger()
     if(CHRONOS_CONTROLLER_BUTTON==1) then --GAMEPAD_DPAD_UP
         return (controller_table.GAMEPAD_DPAD_UP)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==2) then --GAMEPAD_DPAD_DOWN
         return (controller_table.GAMEPAD_DPAD_DOWN)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==3) then --GAMEPAD_DPAD_LEFT
         return (controller_table.GAMEPAD_DPAD_LEFT)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==4) then --GAMEPAD_DPAD_RIGHT
         return (controller_table.GAMEPAD_DPAD_RIGHT)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==5) then --GAMEPAD_START
         return (controller_table.GAMEPAD_START)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==6) then --GAMEPAD_BACK
         return (controller_table.GAMEPAD_BACK)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==7) then --GAMEPAD_LEFT_THUMB
         return (controller_table.GAMEPAD_LEFT_THUMB)
       end
 
       if(CHRONOS_CONTROLLER_BUTTON==8) then --GAMEPAD_RIGHT_THUMB (default)
-
         return (controller_table.GAMEPAD_RIGHT_THUMB)
-
       end
 
       if(CHRONOS_CONTROLLER_BUTTON==9) then --GAMEPAD_LEFT_SHOULDER
         return (controller_table.GAMEPAD_LEFT_SHOULDER)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==10) then --GAMEPAD_RIGHT_SHOULDER
         return (controller_table.GAMEPAD_RIGHT_SHOULDER)
       end
@@ -197,29 +185,22 @@ function read_controller_chronos_trigger()
       if(CHRONOS_CONTROLLER_BUTTON==11) then --GAMEPAD_A
         return (controller_table.GAMEPAD_A)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==12) then --GAMEPAD_B
         return (controller_table.GAMEPAD_B)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==13) then --GAMEPAD_X
         return (controller_table.GAMEPAD_X)
       end
-
       if(CHRONOS_CONTROLLER_BUTTON==14) then --GAMEPAD_Y
         return (controller_table.GAMEPAD_Y)
       end
 
       if(CHRONOS_CONTROLLER_BUTTON==15) then --LeftTrigger (default in Katana Zero)
-
         return (controller_table.LeftTrigger>30) --cant use left trigger near grappling nodes
-
       end
 
       if(CHRONOS_CONTROLLER_BUTTON==16) then --RightTrigger
-
         return (controller_table.RightTrigger>30) --Tool
-
       end
 
       if(CHRONOS_CONTROLLER_BUTTON==17) then --ThumbLeftX
@@ -305,14 +286,15 @@ function checkChronosInput()
     speed = (1/chronos_counter)
     --print("Chronos counter: " .. chronos_counter)
     --print("Color intensity: " .. color_intensity)
-
-    if(speed>0) then
+    if(speed<SLOW_MIN) then
+    speed = SLOW_MIN
+    end
      writeFloat(Game_speed_ptr,speed)
      writeFloat(Bullet_speed_ptr,speed)
      if(enable_airtime>0) then
         writeFloat(Movement_mult_ptr,speed)
      end
-    end
+
     if(color_intensity<=BRIGHTNESS_MAX) then
        writeFloat(Phantom_param_ptr,color_intensity)
     else
