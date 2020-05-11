@@ -22,7 +22,7 @@ openProcess("sekiro.exe")
           <ID>1337105743</ID>
           <Description>"[KATANA ZERO MODE]"</Description>
           <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
-          <LastState/>
+          <LastState Activated="1"/>
           <Color>FF00FF</Color>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>[ENABLE]
@@ -201,7 +201,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
               <ID>1337106025</ID>
               <Description>"[CONFIG]"</Description>
               <Options moHideChildren="1"/>
-              <LastState Value="" RealAddress="00000000"/>
+              <LastState Value="" Activated="1" RealAddress="00000000"/>
               <GroupHeader>1</GroupHeader>
               <CheatEntries>
                 <CheatEntry>
@@ -473,7 +473,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
               <ID>1337105846</ID>
               <Description>"[CHRONOS]"</Description>
               <Options moHideChildren="1" moManualExpandCollapse="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-              <LastState/>
+              <LastState Activated="1"/>
               <Color>FFD200</Color>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>[ENABLE]
@@ -903,12 +903,14 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106107</ID>
                       <Description>"CFG_USE_MOVEMENT_MULT"</Description>
+                      <Color>C0C0C0</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_USE_MOVEMENT_MULT</Address>
                     </CheatEntry>
                     <CheatEntry>
                       <ID>1337106106</ID>
                       <Description>"MOVEMENT_MULT"</Description>
+                      <Color>C0C0C0</Color>
                       <VariableType>Float</VariableType>
                       <Address>MOVEMENT_MULT</Address>
                     </CheatEntry>
@@ -1030,6 +1032,7 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337105851</ID>
                           <Description>"PHANTOM_COLOR_OPACITY"</Description>
+                          <Color>C0C0C0</Color>
                           <VariableType>Float</VariableType>
                           <Address>PHANTOM_COLOR_OPACITY</Address>
                         </CheatEntry>
@@ -1077,6 +1080,7 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337105854</ID>
                           <Description>"PHANTOM_LIGHT_OPACITY"</Description>
+                          <Color>C0C0C0</Color>
                           <VariableType>Float</VariableType>
                           <Address>PHANTOM_LIGHT_OPACITY</Address>
                         </CheatEntry>
@@ -1133,7 +1137,7 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105873</ID>
                               <Description>"PHANTOM_EDGE_RED_W"</Description>
-                              <Color>7171FF</Color>
+                              <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RED_W</Address>
                             </CheatEntry>
@@ -1181,7 +1185,7 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105875</ID>
                               <Description>"PHANTOM_EDGE_BLUE_W"</Description>
-                              <Color>64FF64</Color>
+                              <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_BLUE_W</Address>
                             </CheatEntry>
@@ -1230,7 +1234,7 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105877</ID>
                               <Description>"PHANTOM_EDGE_GREEN_W"</Description>
-                              <Color>FF6464</Color>
+                              <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_GREEN_W</Address>
                             </CheatEntry>
@@ -1268,6 +1272,7 @@ dealloc(newmem)
                               <Description>"RED"</Description>
                               <Options moHideChildren="1"/>
                               <LastState Activated="1"/>
+                              <Color>0000FF</Color>
                               <VariableType>Auto Assembler Script</VariableType>
                               <AssemblerScript>define(address,"sekiro.exe"+108223D)
 define(bytes,41 0F B6 40 1A)
@@ -1302,6 +1307,7 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105856</ID>
                                   <Description>"Value"</Description>
+                                  <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF</Address>
                                 </CheatEntry>
@@ -1312,6 +1318,7 @@ dealloc(newmem)
                               <Description>"GREEN"</Description>
                               <Options moHideChildren="1"/>
                               <LastState Activated="1"/>
+                              <Color>00FF00</Color>
                               <VariableType>Auto Assembler Script</VariableType>
                               <AssemblerScript>define(address,"sekiro.exe"+108224E)
 define(bytes,41 0F B6 40 1B)
@@ -1345,6 +1352,7 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105858</ID>
                                   <Description>"Value"</Description>
+                                  <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF+1</Address>
                                 </CheatEntry>
@@ -1355,6 +1363,7 @@ dealloc(newmem)
                               <Description>"BLUE"</Description>
                               <Options moHideChildren="1"/>
                               <LastState Activated="1"/>
+                              <Color>FF0000</Color>
                               <VariableType>Auto Assembler Script</VariableType>
                               <AssemblerScript>define(address,"sekiro.exe"+1082263)
 define(bytes,41 0F B6 40 1C)
@@ -1388,6 +1397,7 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105857</ID>
                                   <Description>"Value"</Description>
+                                  <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF+2</Address>
                                 </CheatEntry>
@@ -1573,7 +1583,7 @@ dealloc(newmem)
                   <ID>1337106156</ID>
                   <Description>"[Bullet]"</Description>
                   <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                  <LastState Value="" RealAddress="00000000"/>
+                  <LastState Value="" Activated="1" RealAddress="00000000"/>
                   <Color>00CA00</Color>
                   <GroupHeader>1</GroupHeader>
                   <CheatEntries>
@@ -1818,7 +1828,7 @@ dealloc(newmem)
                   <ID>1337049776</ID>
                   <Description>"[Alloc DebugSpEffect function]"</Description>
                   <Options moHideChildren="1"/>
-                  <LastState/>
+                  <LastState Activated="1"/>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>[ENABLE]
 alloc(AddEffect,512,sekiro.exe)
@@ -2080,7 +2090,7 @@ ret
             <CheatEntry>
               <ID>1337105979</ID>
               <Description>"[ x Shot damage]"</Description>
-              <LastState Activated="1"/>
+              <LastState/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>{
   reduces player and enemy resistance to shot damage
@@ -2124,7 +2134,7 @@ dealloc(newmem)
             <CheatEntry>
               <ID>1337105960</ID>
               <Description>"[ x Slash damage]"</Description>
-              <LastState Activated="1"/>
+              <LastState/>
               <Color>8000FF</Color>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>{
@@ -2169,7 +2179,7 @@ dealloc(newmem)
               <ID>1337105788</ID>
               <Description>"Erratic SFX"</Description>
               <Options moHideChildren="1"/>
-              <LastState Activated="1"/>
+              <LastState/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>{
   Changes how certain buff and fog sfx is rendered
@@ -2249,83 +2259,116 @@ dealloc(newmem)
         </CheatEntry>
       </CheatEntries>
     </CheatEntry>
+    <CheatEntry>
+      <ID>1337106158</ID>
+      <Description>"[INFO]"</Description>
+      <LastState/>
+      <Color>FF0000</Color>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{$lua}
+if syntaxcheck then return end
+info_message = "[Sekiro ZERO]\n"
+info_message = info_message .. "This mod lets you experience Sekiro with the chronos game mechanic from Katana ZERO\n"
+info_message = info_message .. "\nSteps to activate the mod:\n\n"
+info_message = info_message .. "- Start Sekiro and load your player character\n"
+info_message = info_message .. "- Load this table and click the box next to [OPEN]\n"
+info_message = info_message .. "- Activate [KATANA ZERO MODE]:\n"
+info_message = info_message .. "- Customize the settings under [CONFIG] (OPTIONAL)\n"
+info_message = info_message .. "- Activate [CHRONOS]:\n"
+info_message = info_message .. "- Have fun :)\n"
+
+
+function showInfoMessage()
+messageDialog(info_message, 2, 2)
+
+end
+
+[ENABLE]
+
+showInfoMessage()
+ 
+[DISABLE]
+
+showInfoMessage()
+</AssemblerScript>
+    </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols>
     <SymbolEntry>
       <Name>CFG_ENABLE_INSTANT_SLASH</Name>
-      <Address>04E80000</Address>
+      <Address>0B8E0000</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_SLASH_SFX</Name>
-      <Address>04E80010</Address>
+      <Address>0B8E0010</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_TIMER_INTERVAL</Name>
-      <Address>04E80020</Address>
+      <Address>0B8E0020</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MULT</Name>
-      <Address>04E80030</Address>
+      <Address>0B8E0030</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_WITHDRAWL_MULT</Name>
-      <Address>04E80040</Address>
+      <Address>0B8E0040</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_KEYBOARD_KEY</Name>
-      <Address>04E80050</Address>
+      <Address>0B8E0050</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_CONTROLLER_BUTTON</Name>
-      <Address>04E80060</Address>
+      <Address>0B8E0060</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_BRIGHTNESS_MAX</Name>
-      <Address>04E80070</Address>
+      <Address>0B8E0070</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>GAMESPEED</Name>
-      <Address>04E800C0</Address>
+      <Address>0B8E00C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MAX_BULLET_SPEED_MULT</Name>
-      <Address>04E80100</Address>
+      <Address>0B8E0100</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>FREEZE_BULLET_TIME</Name>
-      <Address>04E80160</Address>
+      <Address>0B8E0160</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_COLOR_OPACITY</Name>
-      <Address>04E801E0</Address>
+      <Address>0B8E01E0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_LIGHT_OPACITY</Name>
-      <Address>04E80200</Address>
+      <Address>0B8E0200</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RED_W</Name>
-      <Address>04E80220</Address>
+      <Address>0B8E0220</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_BLUE_W</Name>
-      <Address>04E80230</Address>
+      <Address>0B8E0230</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_GREEN_W</Name>
-      <Address>04E80240</Address>
+      <Address>0B8E0240</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_DIFF</Name>
-      <Address>04E80250</Address>
+      <Address>0B8E0250</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>LIGHT_MULTIPLIER</Name>
-      <Address>04E80260</Address>
+      <Address>0B8E0260</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>Debug_SpEffect_Type</Name>
-      <Address>04E802A0</Address>
+      <Address>0B8E02A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>light_matrix3</Name>
@@ -2333,39 +2376,39 @@ dealloc(newmem)
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MAX</Name>
-      <Address>04E80090</Address>
+      <Address>0B8E0090</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_USE_MOVEMENT_MULT</Name>
-      <Address>04E800A0</Address>
+      <Address>0B8E00A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_PLAYER_MOVE</Name>
-      <Address>04E800B0</Address>
+      <Address>0B8E00B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ACCELERATION_MULT</Name>
-      <Address>04E80120</Address>
+      <Address>0B8E0120</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ACCELERATION_ADD</Name>
-      <Address>04E80140</Address>
+      <Address>0B8E0140</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>RELEASE_BULLET_TIME</Name>
-      <Address>04E80170</Address>
+      <Address>0B8E0170</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ZERO</Name>
-      <Address>04E80180</Address>
+      <Address>0B8E0180</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ALMOST_ZERO</Name>
-      <Address>04E801A0</Address>
+      <Address>0B8E01A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MOVEMENT_MULT</Name>
-      <Address>04E801C0</Address>
+      <Address>0B8E01C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>DMGCUTRATE_REPLACE</Name>
@@ -2377,7 +2420,7 @@ dealloc(newmem)
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_SLOW_MIN</Name>
-      <Address>04E80080</Address>
+      <Address>0B8E0080</Address>
     </SymbolEntry>
   </UserdefinedSymbols>
 </CheatTable>
