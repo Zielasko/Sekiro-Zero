@@ -41,6 +41,10 @@ globalalloc(CFG_CHRONOS_MAX,4)
 CFG_CHRONOS_MAX:
 dd #50
 
+globalalloc(CFG_CHRONOS_LIGHT_MIN,4)
+CFG_CHRONOS_LIGHT_MIN:
+dd (float)0.35
+
 
 /* CFG_USE_MOVEMENT_MULT and CFG_ENABLE_PLAYER_MOVE are mutually exclusive */
 globalalloc(CFG_USE_MOVEMENT_MULT,1)

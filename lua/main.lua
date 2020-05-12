@@ -13,6 +13,7 @@ if syntaxcheck then return end
   enable_instant_slash = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH"),1)
   enable_slash_sfx = readBytes(getAddress("CFG_ENABLE_SLASH_SFX"),1)
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
+  enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -25,7 +26,7 @@ if syntaxcheck then return end
   CHRONOS_CONTROLLER_BUTTON= readInteger(getAddress("CFG_CHRONOS_CONTROLLER_BUTTON"))
   BRIGHTNESS_MAX = readFloat(getAddress("CFG_CHRONOS_BRIGHTNESS_MAX"))
   SLOW_MIN = readFloat(getAddress("CFG_CHRONOS_SLOW_MIN"))
-
+  CHRONOS_LIGHT_MIN = readFloat(getAddress("CFG_CHRONOS_LIGHT_MIN"))
 
   CHRONOS_COUNTER_INTERVAL = 0.5 * (TIMER_INTERVAL/10) * CHRONOS_MULT
   CHRONOS_COLOR_INTERVAL = 0.1 * (TIMER_INTERVAL/10) * CHRONOS_MULT
@@ -39,6 +40,7 @@ if syntaxcheck then return end
   local state = 0 -- 0 ready 1 slowing down 2 speeding up -- cant go from 2 to 1
   local state_slash = 0 -- 0 ready 1 slashing 2 waiting for release
   local slash_counter = 0
+  local release_counter = 0 -- used to speed up bullets after chronos ends
   chronos_button_pressed = 0
   color_intensity = 0
 
@@ -48,7 +50,7 @@ if syntaxcheck then return end
   Bullet_speed_ptr = getAddress("MAX_BULLET_SPEED_MULT")
   Freeze_bullet_time_ptr = getAddress("FREEZE_BULLET_TIME")
   Bullet_accel_ptr = getAddress("ACCELERATION_MULT")
-  Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME")
+  Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME") -- 0 off 2 on 1 transition to normal
   Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
   Movement_mult_ptr = getAddress("MOVEMENT_MULT")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
@@ -57,7 +59,8 @@ if syntaxcheck then return end
   SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
 
-  errorOnLookupFailure(false) --turn off Errors that arise during Loading screens
+  --turn off Errors that arise during Loading screens and instead return int
+  errorOnLookupFailure(false)
 
 
 
@@ -70,6 +73,15 @@ function state_ready()
     speed = 1.0
     was_SpEffect_successful = true
     was_Player_Speed_write_successful = true
+
+    if(release_counter>0) then
+      if(release_counter==1) then
+        writeBytes(Release_bullet_time_ptr,0)
+        release_counter = 0
+     else
+        release_counter = release_counter - 1
+     end
+    end
 
     if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1))) and (state_slash==0) and (enable_instant_slash>0)) then --check speed slash
      state_slash = 1
@@ -115,7 +127,6 @@ function state_slow()
 
     end
     writeBytes(Freeze_bullet_time_ptr,1,1)
-    speed = 1/chronos_counter
 end
 
 --ending chronos mode
@@ -127,16 +138,18 @@ function state_speed()
      if(light_counter>1) then
         light_counter = light_counter - (CHRONOS_LIGHT_INTERVAL * CHRONOS_WITHDRAWL_MULT)
       end
-     writeBytes(Release_bullet_time_ptr,1,1)
-     writeFloat(Bullet_accel_ptr,chronos_counter*2*CHRONOS_WITHDRAWL_MULT*CHRONOS_WITHDRAWL_MULT)
+     writeBytes(Release_bullet_time_ptr,2)
+     writeFloat(Bullet_accel_ptr,chronos_counter*2*CHRONOS_WITHDRAWL_MULT)
     else
       state = 0
       chronos_counter = 1
       color_intensity = 0
       light_counter = 1
-      writeBytes(Freeze_bullet_time_ptr,0,1)
-      writeBytes(Release_bullet_time_ptr,0,1)
+      writeBytes(Freeze_bullet_time_ptr,0)
+      writeBytes(Release_bullet_time_ptr,1)
+      release_counter = 60 * CHRONOS_WITHDRAWL_MULT
       writeFloat(Bullet_accel_ptr,1)
+      writeFloat(Player_speed_ptr,1)
     end
 end
 
@@ -291,15 +304,23 @@ function checkChronosInput()
     end
      writeFloat(Game_speed_ptr,speed)
      writeFloat(Bullet_speed_ptr,speed)
+     
+     if((enable_player_during_stopped_time>0) and (state>0)) then
+      writeFloat(Player_speed_ptr, chronos_counter)
+     end
+
      if(enable_airtime>0) then
         writeFloat(Movement_mult_ptr,speed)
      end
 
-    if(color_intensity<=BRIGHTNESS_MAX) then
-       writeFloat(Phantom_param_ptr,color_intensity)
-    else
-       writeFloat(Phantom_param_ptr,BRIGHTNESS_MAX)
+    if(color_intensity>=BRIGHTNESS_MAX) then
+      color_intensity = BRIGHTNESS_MAX
+    else 
+      if(color_intensity<0) then
+        color_intensity=0
+      end
     end
+    writeFloat(Phantom_param_ptr,color_intensity)
 
   end
 
