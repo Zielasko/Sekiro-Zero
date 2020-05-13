@@ -23,7 +23,7 @@ dd (float)2.0
 
 globalalloc(CFG_CHRONOS_KEYBOARD_KEY,4)
 CFG_CHRONOS_KEYBOARD_KEY:
-dd #16
+dd #49
 
 globalalloc(CFG_CHRONOS_CONTROLLER_BUTTON,4)
 CFG_CHRONOS_CONTROLLER_BUTTON:
@@ -54,6 +54,10 @@ db #1
 globalalloc(CFG_ENABLE_PLAYER_MOVE,1)
 CFG_ENABLE_PLAYER_MOVE:
 db #0
+
+globalalloc(CFG_ENABLE_EXHAUSTION,1)
+CFG_ENABLE_EXHAUSTION:
+db #1
 
 
 
@@ -143,6 +147,21 @@ dd (float)1.0
 globalalloc(Debug_SpEffect_Type,4)
 Debug_SpEffect_Type:
 dd 0xFFFF
+
+/* Debug Add SpEffect function */
+alloc(AddEffect,512,sekiro.exe)
+registersymbol(AddEffect)
+
+
+AddEffect:
+mov rcx,[sekiro.exe+3B68E30] //playerBase
+mov rcx,[rcx+88]
+mov rcx,[rcx+11D0]
+mov edx,[Debug_SpEffect_Type]
+sub rsp,28
+call sekiro.exe+BE4290 //40 53 48 83 ec 60 48 8b d9 85 d2 0f 84 c6 00 00 00 83 ea 01 0f 84 b3 00 00 00 83 ea 01
+add rsp,28
+ret
 
 
 

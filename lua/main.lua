@@ -14,6 +14,7 @@ if syntaxcheck then return end
   enable_slash_sfx = readBytes(getAddress("CFG_ENABLE_SLASH_SFX"),1)
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
   enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
+  enable_slash_exhaustion = readBytes(getAddress("CFG_ENABLE_EXHAUSTION"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -34,13 +35,17 @@ if syntaxcheck then return end
 
 
   SLASH_DURATION = 150/TIMER_INTERVAL
+  SLASH_DELAY = 600/TIMER_INTERVAL
   SLASH_SPEED = 5
+  SLASH_GAUGE_MAX = 100
   SP_EFFECT_ID = 3451
+  EXHAUSTION_HKS = 600 --600=sheate 
 
   local state = 0 -- 0 ready 1 slowing down 2 speeding up -- cant go from 2 to 1
   local state_slash = 0 -- 0 ready 1 slashing 2 waiting for release
   local slash_counter = 0
   local release_counter = 0 -- used to speed up bullets after chronos ends
+  local slash_gauge = SLASH_GAUGE_MAX --used to prevent spamming attacks vs bosses
   chronos_button_pressed = 0
   color_intensity = 0
 
@@ -58,6 +63,19 @@ if syntaxcheck then return end
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
   SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
+  Buff_ptr = getAddress("[[[[sekiro.exe+3B858C0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual 
+
+  -- Setup exhaustion buff
+  writeInteger(Buff_ptr,2107)
+  writeFloat(Buff_ptr+8,-1)
+  --writeFloat(Buff_ptr+0x10,0.5) -- maxHPRate   0x94 maxhpchangerate
+  writeInteger(Buff_ptr+0x0178,48355) --vfx0 (all mibu buffs signs)
+  writeInteger(Buff_ptr+0x0198,-1) --vfx1
+  writeInteger(Buff_ptr+0x03C0,-1) -- hksCommand 600=sheate 401=disable combo 590=insane
+
+  writeInteger(SpEffect_Type_ptr,0)
+  writeInteger(SpEffect_ID_ptr,3630) --divine confetti
+  autoAssemble("CreateThread(AddEffect)")
 
   --turn off Errors that arise during Loading screens and instead return int
   errorOnLookupFailure(false)
@@ -83,9 +101,10 @@ function state_ready()
      end
     end
 
-    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1))) and (state_slash==0) and (enable_instant_slash>0)) then --check speed slash
+    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1))) and (state_slash==0) and (enable_instant_slash>0) and (is_exhausted==0)) then --check speed slash
      state_slash = 1
      slash_counter = 0
+     slash_gauge = slash_gauge - 25
 
       if(enable_slash_sfx>0) then
        if(SpEffect_Type_ptr>0) then
@@ -238,7 +257,15 @@ function checkChronosInput()
       SpEffect_ID_ptr=getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
 
       if(Player_speed_ptr==0) then --don't write to uninitialized memory during loading screens
+        inLoadingScreen = 1
         return
+      end
+
+      if(inLoadingScreen==1) then 
+        writeInteger(SpEffect_Type_ptr,0)
+        writeInteger(SpEffect_ID_ptr,3630) --divine confetti
+        autoAssemble("CreateThread(AddEffect)")
+        inLoadingScreen = 0
       end
 
       controller_table = getXBox360ControllerState()
@@ -264,16 +291,35 @@ function checkChronosInput()
       chronos_button_pressed = 0
     end
 
+   if(state_slash==0) then
+    if(slash_gauge<SLASH_GAUGE_MAX) then
+     slash_gauge = slash_gauge+5
+     else
+     is_exhausted = 0
+     writeInteger(Buff_ptr+0x03C0,-1) --unsheate
+     writeInteger(Buff_ptr,2107) --icon
+     writeInteger(Buff_ptr+0x0178,48355) --vfx0
+     end
+    end
+
    if(state_slash==1) then
      slash_counter = slash_counter + 1
      if(slash_counter>=SLASH_DURATION) then
        writeFloat(Player_speed_ptr, 1)
-       slash_counter = 0
-       state_slash = 2
-
-       writeInteger(SpEffect_Type_ptr,3)
-       writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
-       autoAssemble("CreateThread(AddEffect)")
+       --sheat sword when exhausted
+       if(slash_gauge<0 and enable_slash_exhaustion>0) then 
+        is_exhausted = 1
+        writeInteger(Buff_ptr+0x03C0,EXHAUSTION_HKS) --sheate
+        writeInteger(Buff_ptr,2210) --icon
+        writeInteger(Buff_ptr+0x0178,48353) --vfx0
+       end
+       if((slash_counter>=SLASH_DURATION+SLASH_DELAY) or slash_gauge>0 or enable_slash_exhaustion==0) then --instantly allow follow up slashes if either the gauge is not used up or the gauge is ignored
+         slash_counter = 0
+         state_slash = 2
+         writeInteger(SpEffect_Type_ptr,3)
+         writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
+         autoAssemble("CreateThread(AddEffect)")
+       end
      end
    end
 
