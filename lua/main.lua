@@ -35,7 +35,11 @@ if syntaxcheck then return end
   SLASH_S_WAITING = 5
   SLASH_TRANS_WAITING_READY = 6
 
-  state_slash = SLASH_S_READY --SLASH_TRANS_INIT
+  SLASH_S_EX = 7
+  SLASH_TRANS_EX_READY = 8
+  SLASH_TRANS_ACTIVE_EX = 9
+
+  state_slash = SLASH_TRANS_INIT
 
 
   --read config
@@ -65,15 +69,15 @@ if syntaxcheck then return end
 
 
   SLASH_DURATION = 150/TIMER_INTERVAL
-  SLASH_DELAY = 600/TIMER_INTERVAL
+  SLASH_DELAY = 800/TIMER_INTERVAL
   SLASH_SPEED = 5
   SLASH_GAUGE_MAX = 100
   SP_EFFECT_ID = 3451
-  EXHAUSTION_HKS = 600 --600=sheate
+  EXHAUSTION_HKS = 600 --600=sheathe
 
-  local slash_counter = 0
+  slash_counter = 0
   local release_counter = 0 -- used to speed up bullets after chronos ends
-  local slash_gauge = SLASH_GAUGE_MAX --used to prevent spamming attacks vs bosses
+  slash_gauge = SLASH_GAUGE_MAX --used to prevent spamming attacks vs bosses
   chronos_button_pressed = 0
   color_intensity = 0
 
@@ -132,32 +136,6 @@ function state_ready()
      else
         release_counter = release_counter - 1
      end
-    end
-
-    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1))) and (state_slash==SLASH_S_READY) and (enable_instant_slash>0) and (is_exhausted==0)) then --check speed slash
-     state_slash = SLASH_S_ACTIVE
-     slash_counter = 0
-     slash_gauge = slash_gauge - 25
-
-      if(enable_slash_sfx>0) then
-       if(SpEffect_Type_ptr>0) then
-           was_SpEffect_successful = writeInteger(SpEffect_Type_ptr,0)
-           was_SpEffect_successful = was_SpEffect_successful and writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
-           autoAssemble("CreateThread(AddEffect)")
-        else
-           print("ERROR: Debug_SpEffect_Type not defined " .. getAddress("Debug_SpEffect_Type"))
-       end
-      end
-
-     if(Player_speed_ptr>0) then
-          was_Player_Speed_write_successful = writeFloat(Player_speed_ptr, SLASH_SPEED)
-      else
-          print("ERROR: PLAYER_SPEED not defined " .. getAddress("PLAYER_SPEED"))
-     end
-
-     if(not was_SpEffect_successful) then print("could not apply SpEffect") end
-     if(not was_Player_Speed_write_successful) then print("could not write to Player speed ptr") end
-
     end
 
     if(chronos_button_pressed==1) then
@@ -240,31 +218,119 @@ end
 function slash_transition_init()
   state_slash = SLASH_S_READY
 end
-
 function slash_state_ready()
-  state_slash = SLASH_TRANS_READY_ACTIVE
+
+  --check if player is attacking
+  if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1)))) then --check speed slash [optional] (controller_table==nil) 
+    state_slash = SLASH_TRANS_READY_ACTIVE
+   end
+
+  if(slash_gauge<SLASH_GAUGE_MAX) then
+     slash_gauge = slash_gauge + 5 * (TIMER_INTERVAL/20)
+  end
+
+  --state_slash = SLASH_S_READY
 end
 
+--speed up animation and apply sfx
 function slash_transition_ready_active()
+  --print("transition ready active")
+  slash_gauge = slash_gauge - 25
+  slash_counter = 0
+  if(enable_slash_sfx>0) then
+    if(SpEffect_Type_ptr>0) then
+        was_SpEffect_successful = writeInteger(SpEffect_Type_ptr,0)
+        was_SpEffect_successful = was_SpEffect_successful and writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
+        autoAssemble("CreateThread(AddEffect)")
+     else
+        print("ERROR: Debug_SpEffect_Type not defined " .. getAddress("Debug_SpEffect_Type"))
+    end
+   end
+
+  if(Player_speed_ptr>0) then
+       if(chronos_counter>1) then
+          was_Player_Speed_write_successful = writeFloat(Player_speed_ptr, SLASH_SPEED*(1/speed))
+       else
+          was_Player_Speed_write_successful = writeFloat(Player_speed_ptr, SLASH_SPEED)
+       end
+   else
+       print("ERROR: PLAYER_SPEED not defined " .. getAddress("PLAYER_SPEED"))
+  end
+
+  if(not was_SpEffect_successful) then print("could not apply SpEffect") end
+  if(not was_Player_Speed_write_successful) then print("could not write to Player speed ptr") end
+  
   state_slash = SLASH_S_ACTIVE
 end
 
 function slash_state_active()
-  state_slash = SLASH_TRANS_ACTIVE_WAITING
+
+    slash_counter = slash_counter + 1
+    if(slash_counter>=SLASH_DURATION) then
+      writeFloat(Player_speed_ptr, 1)
+      --sheathe sword when exhausted
+      if(slash_gauge<=0 and enable_slash_exhaustion>0) then
+        state_slash = SLASH_TRANS_ACTIVE_EX
+      end
+      if(slash_gauge>0 or enable_slash_exhaustion==0) then --instantly allow follow up slashes if either the gauge is not used up or the gauge is ignored
+        state_slash = SLASH_TRANS_ACTIVE_WAITING
+        writeInteger(SpEffect_Type_ptr,3)
+        writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
+        autoAssemble("CreateThread(AddEffect)")
+      end
+    end
+
+
+  --state_slash = SLASH_TRANS_ACTIVE_WAITING
 end
 
 function slash_transition_active_waiting()
+  --print("transition active waiting")
+  slash_counter = 0
   state_slash = SLASH_S_WAITING
 end
 
+-- waiting for button to be released
 function slash_state_waiting()
-  state_slash = SLASH_TRANS_WAITING_READY
+    if((not speed_slash_trigger) and (not isKeyPressed(1))) then
+      state_slash = SLASH_TRANS_WAITING_READY
+    end
 end
 
 function slash_transition_waiting_ready()
+  --print("transition waiting ready")
   state_slash = SLASH_S_READY
 end
 
+function slash_state_exhaustet()
+  slash_counter = slash_counter + 1
+  --if(slash_gauge<SLASH_GAUGE_MAX) then
+    slash_gauge = slash_gauge + 5 * (TIMER_INTERVAL/20)
+  --else
+    if(slash_counter>=SLASH_DURATION+SLASH_DELAY) then
+      state_slash = SLASH_TRANS_EX_READY
+    end
+  --end
+end
+
+
+function slash_transition_exhaustet_ready()
+  --print("transition ex ready")
+  writeInteger(Buff_ptr+0x03C0,-1) --unsheate
+  writeInteger(Buff_ptr,2107) --icon
+  writeInteger(Buff_ptr+0x0178,48355) --vfx0
+  slash_counter = 0
+  slash_gauge = SLASH_GAUGE_MAX
+  state_slash = SLASH_S_READY
+end
+
+function slash_transition_active_exhaustet()
+  --print("transition active ex")
+  writeInteger(Buff_ptr+0x03C0,EXHAUSTION_HKS) --sheate
+  writeInteger(Buff_ptr,2210) --icon
+  writeInteger(Buff_ptr+0x0178,48353) --vfx0
+  state_slash = SLASH_S_EX
+end
 local slash_state_tbl =
   {
   [SLASH_TRANS_INIT] = slash_transition_init,
@@ -274,6 +340,9 @@ local slash_state_tbl =
   [SLASH_TRANS_ACTIVE_WAITING] = slash_transition_active_waiting,
   [SLASH_S_WAITING] = slash_state_waiting,--WAITING
   [SLASH_TRANS_WAITING_READY] = slash_transition_waiting_ready,
+  [SLASH_S_EX] = slash_state_exhaustet,--WAITING
+  [SLASH_TRANS_EX_READY] = slash_transition_exhaustet_ready,
+  [SLASH_TRANS_ACTIVE_EX] = slash_transition_active_exhaustet,
   }
 
 function read_controller_chronos_trigger()
@@ -387,47 +456,6 @@ function checkChronosInput()
        chronos_button_pressed = 0
      end
 
-      -- Handle Instant slashes
-    if(state_slash==SLASH_S_READY) then
-     if(slash_gauge<SLASH_GAUGE_MAX) then
-      slash_gauge = slash_gauge+5
-      else
-      is_exhausted = 0
-      writeInteger(Buff_ptr+0x03C0,-1) --unsheate
-      writeInteger(Buff_ptr,2107) --icon
-      writeInteger(Buff_ptr+0x0178,48355) --vfx0
-      end
-     end
-
-   if(state_slash==SLASH_S_ACTIVE) then
-     slash_counter = slash_counter + 1
-     if(slash_counter>=SLASH_DURATION) then
-       writeFloat(Player_speed_ptr, 1)
-       --sheat sword when exhausted
-       if(slash_gauge<0 and enable_slash_exhaustion>0) then
-        is_exhausted = 1
-        writeInteger(Buff_ptr+0x03C0,EXHAUSTION_HKS) --sheate
-        writeInteger(Buff_ptr,2210) --icon
-        writeInteger(Buff_ptr+0x0178,48353) --vfx0
-       end
-       if((slash_counter>=SLASH_DURATION+SLASH_DELAY) or slash_gauge>0 or enable_slash_exhaustion==0) then --instantly allow follow up slashes if either the gauge is not used up or the gauge is ignored
-         slash_counter = 0
-         state_slash = SLASH_S_WAITING
-         writeInteger(SpEffect_Type_ptr,3)
-         writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
-         autoAssemble("CreateThread(AddEffect)")
-       end
-     end
-   end
-
-   if(state_slash==SLASH_S_WAITING) then
-    if(((not speed_slash_trigger) and (controller_table~=nil)) or ((controller_table==nil) and (not isKeyPressed(1)))) then
-      state_slash = SLASH_S_READY
-    end
-   end
-
-  
-
     local current_state_function = state_tbl[state]
     if(current_state_function) then
       current_state_function()
@@ -449,12 +477,24 @@ function checkChronosInput()
     if(speed<SLOW_MIN) then
       speed = SLOW_MIN
     end
+
+    if(enable_instant_slash>0) then
+      local current_slash_state_function = slash_state_tbl[state_slash]
+      if(current_slash_state_function) then
+        current_slash_state_function()
+      else
+        print("Error: Slash State out of range")
+        print(slash_state)
+      end
+    end
+
+
      writeFloat(Game_speed_ptr,speed)
      writeFloat(Bullet_speed_ptr,speed)
 
      -- enable Player during stopped time
      if((enable_player_during_stopped_time>0) and (state>S_READY)) then
-      writeFloat(Player_speed_ptr, chronos_counter)
+      writeFloat(Player_speed_ptr, (1/speed))
      end
 
      if(enable_airtime>0) then
