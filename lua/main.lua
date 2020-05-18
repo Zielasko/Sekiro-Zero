@@ -8,6 +8,36 @@ if syntaxcheck then return end
   speed = 0.03
   light_counter = 1
 
+  -- Chronos States and state transitions
+  -- Ready | Slowing down | Speeding up -- cant go from Speed to Slow
+  TRANS_INIT = 0 --<const>
+  S_READY = 1
+  TRANS_READY_SLOW = 2
+
+  S_SLOW = 3
+  TRANS_SLOW_READY = 4
+  TRANS_SLOW_SPEED = 5
+
+  S_SPEED = 6
+  TRANS_SPEED_READY = 7
+
+  state = TRANS_INIT
+
+  -- Instant Slash States and state transitions
+  -- ready | slashing | waiting for release
+  SLASH_TRANS_INIT = 0
+  SLASH_S_READY = 1
+  SLASH_TRANS_READY_ACTIVE = 2
+
+  SLASH_S_ACTIVE = 3
+  SLASH_TRANS_ACTIVE_WAITING = 4
+
+  SLASH_S_WAITING = 5
+  SLASH_TRANS_WAITING_READY = 6
+
+  state_slash = SLASH_S_READY --SLASH_TRANS_INIT
+
+
   --read config
   CHRONOS_COUNTER_MAX = readInteger(getAddress("CFG_CHRONOS_MAX"))
   enable_instant_slash = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH"),1)
@@ -39,10 +69,8 @@ if syntaxcheck then return end
   SLASH_SPEED = 5
   SLASH_GAUGE_MAX = 100
   SP_EFFECT_ID = 3451
-  EXHAUSTION_HKS = 600 --600=sheate 
+  EXHAUSTION_HKS = 600 --600=sheate
 
-  local state = 0 -- 0 ready 1 slowing down 2 speeding up -- cant go from 2 to 1
-  local state_slash = 0 -- 0 ready 1 slashing 2 waiting for release
   local slash_counter = 0
   local release_counter = 0 -- used to speed up bullets after chronos ends
   local slash_gauge = SLASH_GAUGE_MAX --used to prevent spamming attacks vs bosses
@@ -63,7 +91,7 @@ if syntaxcheck then return end
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
   SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
-  Buff_ptr = getAddress("[[[[sekiro.exe+3B858C0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual 
+  Buff_ptr = getAddress("[[[[sekiro.exe+3B858C0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual
 
   -- Setup exhaustion buff
   writeInteger(Buff_ptr,2107)
@@ -86,6 +114,11 @@ if syntaxcheck then return end
     print("Please choose a minimum chronos slowdown value < 1")
   end
 
+
+function transition_init()
+    state = S_READY
+end
+
   -- Default state, ready to activate chronos mode or instant attack/dash
 function state_ready()
     speed = 1.0
@@ -101,8 +134,8 @@ function state_ready()
      end
     end
 
-    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1))) and (state_slash==0) and (enable_instant_slash>0) and (is_exhausted==0)) then --check speed slash
-     state_slash = 1
+    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1))) and (state_slash==SLASH_S_READY) and (enable_instant_slash>0) and (is_exhausted==0)) then --check speed slash
+     state_slash = SLASH_S_ACTIVE
      slash_counter = 0
      slash_gauge = slash_gauge - 25
 
@@ -128,14 +161,18 @@ function state_ready()
     end
 
     if(chronos_button_pressed==1) then
-     state = 1
+     state = TRANS_READY_SLOW
     end
+end
+
+function transition_ready_slow()
+  state = S_SLOW
 end
 
 --activated chronos mode
 function state_slow()
     if(chronos_button_pressed==0) then
-      state = 2
+      state = TRANS_SLOW_SPEED
       return
     end
 
@@ -146,6 +183,14 @@ function state_slow()
 
     end
     writeBytes(Freeze_bullet_time_ptr,1,1)
+end
+
+function transition_slow_ready()
+  state = S_READY
+end
+
+function transition_slow_speed()
+  state = S_SPEED
 end
 
 --ending chronos mode
@@ -160,7 +205,7 @@ function state_speed()
      writeBytes(Release_bullet_time_ptr,2)
      writeFloat(Bullet_accel_ptr,chronos_counter*2*CHRONOS_WITHDRAWL_MULT)
     else
-      state = 0
+      state = TRANS_SPEED_READY
       chronos_counter = 1
       color_intensity = 0
       light_counter = 1
@@ -172,13 +217,64 @@ function state_speed()
     end
 end
 
+function transition_speed_ready()
+  state = S_READY
+end
+
   local state_tbl =
   {
-  [0] = state_ready,
-  [1] = state_slow,
-  [2] = state_speed,
+  [TRANS_INIT] = transition_init,
+  [S_READY] = state_ready, --READY
+  [TRANS_READY_SLOW] = transition_ready_slow,
+  [S_SLOW] = state_slow, --SLOW
+  [TRANS_SLOW_READY] = transition_slow_ready,
+  [TRANS_SLOW_SPEED] = transition_slow_speed,
+  [S_SPEED] = state_speed, --SPEED
+  [TRANS_SPEED_READY] = transition_speed_ready,
   }
 
+
+
+-- Slash states
+
+function slash_transition_init()
+  state_slash = SLASH_S_READY
+end
+
+function slash_state_ready()
+  state_slash = SLASH_TRANS_READY_ACTIVE
+end
+
+function slash_transition_ready_active()
+  state_slash = SLASH_S_ACTIVE
+end
+
+function slash_state_active()
+  state_slash = SLASH_TRANS_ACTIVE_WAITING
+end
+
+function slash_transition_active_waiting()
+  state_slash = SLASH_S_WAITING
+end
+
+function slash_state_waiting()
+  state_slash = SLASH_TRANS_WAITING_READY
+end
+
+function slash_transition_waiting_ready()
+  state_slash = SLASH_S_READY
+end
+
+local slash_state_tbl =
+  {
+  [SLASH_TRANS_INIT] = slash_transition_init,
+  [SLASH_S_READY] = slash_state_ready, --READY
+  [SLASH_TRANS_READY_ACTIVE] = slash_transition_ready_active,
+  [SLASH_S_ACTIVE] = slash_state_active, --ACTIVE
+  [SLASH_TRANS_ACTIVE_WAITING] = slash_transition_active_waiting,
+  [SLASH_S_WAITING] = slash_state_waiting,--WAITING
+  [SLASH_TRANS_WAITING_READY] = slash_transition_waiting_ready,
+  }
 
 function read_controller_chronos_trigger()
     if(CHRONOS_CONTROLLER_BUTTON==1) then --GAMEPAD_DPAD_UP
@@ -261,7 +357,7 @@ function checkChronosInput()
         return
       end
 
-      if(inLoadingScreen==1) then 
+      if(inLoadingScreen==1) then --exit loading screen
         writeInteger(SpEffect_Type_ptr,0)
         writeInteger(SpEffect_ID_ptr,3630) --divine confetti
         autoAssemble("CreateThread(AddEffect)")
@@ -278,36 +374,37 @@ function checkChronosInput()
       --controllerID = controller_table.ControllerID
       --print("Controller ID: " .. controllerID)
 
-      chronos_trigger = controller_table.GAMEPAD_RIGHT_THUMB
+      chronos_trigger = false
 
       chronos_trigger = read_controller_chronos_trigger()
 
       speed_slash_trigger = controller_table.GAMEPAD_RIGHT_SHOULDER
-    end
-
-    if(chronos_trigger or isKeyPressed(CHRONOS_KEYBOARD_KEY)) then
-      chronos_button_pressed = 1
-    else
-      chronos_button_pressed = 0
-    end
-
-   if(state_slash==0) then
-    if(slash_gauge<SLASH_GAUGE_MAX) then
-     slash_gauge = slash_gauge+5
-     else
-     is_exhausted = 0
-     writeInteger(Buff_ptr+0x03C0,-1) --unsheate
-     writeInteger(Buff_ptr,2107) --icon
-     writeInteger(Buff_ptr+0x0178,48355) --vfx0
      end
-    end
 
-   if(state_slash==1) then
+     if(chronos_trigger or isKeyPressed(CHRONOS_KEYBOARD_KEY)) then
+       chronos_button_pressed = 1
+     else
+       chronos_button_pressed = 0
+     end
+
+      -- Handle Instant slashes
+    if(state_slash==SLASH_S_READY) then
+     if(slash_gauge<SLASH_GAUGE_MAX) then
+      slash_gauge = slash_gauge+5
+      else
+      is_exhausted = 0
+      writeInteger(Buff_ptr+0x03C0,-1) --unsheate
+      writeInteger(Buff_ptr,2107) --icon
+      writeInteger(Buff_ptr+0x0178,48355) --vfx0
+      end
+     end
+
+   if(state_slash==SLASH_S_ACTIVE) then
      slash_counter = slash_counter + 1
      if(slash_counter>=SLASH_DURATION) then
        writeFloat(Player_speed_ptr, 1)
        --sheat sword when exhausted
-       if(slash_gauge<0 and enable_slash_exhaustion>0) then 
+       if(slash_gauge<0 and enable_slash_exhaustion>0) then
         is_exhausted = 1
         writeInteger(Buff_ptr+0x03C0,EXHAUSTION_HKS) --sheate
         writeInteger(Buff_ptr,2210) --icon
@@ -315,7 +412,7 @@ function checkChronosInput()
        end
        if((slash_counter>=SLASH_DURATION+SLASH_DELAY) or slash_gauge>0 or enable_slash_exhaustion==0) then --instantly allow follow up slashes if either the gauge is not used up or the gauge is ignored
          slash_counter = 0
-         state_slash = 2
+         state_slash = SLASH_S_WAITING
          writeInteger(SpEffect_Type_ptr,3)
          writeInteger(SpEffect_ID_ptr,SP_EFFECT_ID) --divine confetti
          autoAssemble("CreateThread(AddEffect)")
@@ -323,35 +420,40 @@ function checkChronosInput()
      end
    end
 
-   if(state_slash==2) then
+   if(state_slash==SLASH_S_WAITING) then
     if(((not speed_slash_trigger) and (controller_table~=nil)) or ((controller_table==nil) and (not isKeyPressed(1)))) then
-      state_slash = 0
+      state_slash = SLASH_S_READY
     end
    end
 
-   if((1/light_counter)>CHRONOS_LIGHT_MIN) then
-       writeFloat(Light_ptr,1/light_counter)
-   else
-       writeFloat(Light_ptr,CHRONOS_LIGHT_MIN)
-   end
+  
 
-    local current_function = state_tbl[state]
-    if(current_function) then
-     current_function()
+    local current_state_function = state_tbl[state]
+    if(current_state_function) then
+      current_state_function()
     else
     print("Error: State out of range")
+    print(state)
+    end
+
+    if((1/light_counter)>CHRONOS_LIGHT_MIN) then
+      writeFloat(Light_ptr,1/light_counter)
+    else
+      writeFloat(Light_ptr,CHRONOS_LIGHT_MIN)
     end
 
     speed = (1/chronos_counter)
     --print("Chronos counter: " .. chronos_counter)
     --print("Color intensity: " .. color_intensity)
+
     if(speed<SLOW_MIN) then
-    speed = SLOW_MIN
+      speed = SLOW_MIN
     end
      writeFloat(Game_speed_ptr,speed)
      writeFloat(Bullet_speed_ptr,speed)
-     
-     if((enable_player_during_stopped_time>0) and (state>0)) then
+
+     -- enable Player during stopped time
+     if((enable_player_during_stopped_time>0) and (state>S_READY)) then
       writeFloat(Player_speed_ptr, chronos_counter)
      end
 
@@ -361,7 +463,7 @@ function checkChronosInput()
 
     if(color_intensity>=BRIGHTNESS_MAX) then
       color_intensity = BRIGHTNESS_MAX
-    else 
+    else
       if(color_intensity<0) then
         color_intensity=0
       end

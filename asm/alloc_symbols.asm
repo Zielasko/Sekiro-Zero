@@ -109,15 +109,13 @@ globalalloc(PHANTOM_LIGHT_OPACITY,32,"sekiro.exe"+108242F)
 PHANTOM_LIGHT_OPACITY:
 dd (float)0.0
 
-globalalloc(PHANTOM_EDGE_RED_W,4,"sekiro.exe"+10822CD)
-globalalloc(PHANTOM_EDGE_BLUE_W,4,"sekiro.exe"+10822DE)
-globalalloc(PHANTOM_EDGE_GREEN_W,4,"sekiro.exe"+10822F3)
+globalalloc(PHANTOM_EDGE_RGB,12,"sekiro.exe"+10822CD)
 
-PHANTOM_EDGE_RED_W:
+PHANTOM_EDGE_RGB:
 dd #0
-PHANTOM_EDGE_BLUE_W:
+PHANTOM_EDGE_RGB+4:
 dd #255
-PHANTOM_EDGE_GREEN_W:
+PHANTOM_EDGE_RGB+8:
 dd #255
 
 globalalloc(PHANTOM_DIFF,4,"sekiro.exe"+0x108223D)
@@ -142,7 +140,7 @@ dd (float)1.0
 /*
   Argument for the debug_add_spEffect function
   sets wether the effect is aplied or removed
-  The SpEffect Param ID that is applied/removed on attacks has to be set at a special address 
+  The SpEffect Param ID that is applied/removed on attacks has to be set at a special address
 */
 globalalloc(Debug_SpEffect_Type,4)
 Debug_SpEffect_Type:
