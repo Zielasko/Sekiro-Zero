@@ -5,7 +5,7 @@
       <ID>0</ID>
       <Description>"[OPEN]"</Description>
       <Options moHideChildren="1"/>
-      <LastState Activated="1"/>
+      <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>[ENABLE]
 LuaCall(function cycleFullCompact(sender,force) local state = not(compactmenuitem.Caption == 'Compact View Mode'); if force~=nil then state = not force end; compactmenuitem.Caption = state and 'Compact View Mode' or 'Full View Mode'; getMainForm().Splitter1.Visible = state; getMainForm().Panel4.Visible    = state; getMainForm().Panel5.Visible    = state; end; function addCompactMenu() if compactmenualreadyexists then return end; local parent = getMainForm().Menu.Items; compactmenuitem = createMenuItem(parent); parent.add(compactmenuitem); compactmenuitem.Caption = 'Compact View Mode'; compactmenuitem.OnClick = cycleFullCompact; compactmenualreadyexists = 'yes'; end; addCompactMenu(); cycleFullCompact(nil,true))
@@ -35,6 +35,10 @@ db 0x01
 globalalloc(CFG_ENABLE_SLASH_SFX,1)
 CFG_ENABLE_SLASH_SFX:
 db 0x01
+
+globalalloc(CFG_IS_CHRONOS_TRIGGER,1)
+CFG_IS_CHRONOS_TRIGGER:
+db 0x00
 
 globalalloc(CFG_TIMER_INTERVAL,4)
 CFG_TIMER_INTERVAL:
@@ -346,7 +350,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 163:VK_RCONTROL
 165:VK_RMENU
 </DropDownList>
-                  <LastState Value="49" RealAddress="0F090050"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_CHRONOS_KEYBOARD_KEY</Address>
@@ -375,10 +378,19 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 19:ThumbRightX
 20:ThumbRightY
 </DropDownList>
-                  <LastState Value="8" RealAddress="0F090060"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_CHRONOS_CONTROLLER_BUTTON</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106392</ID>
+                  <Description>"Trigger/Hold Chronos Button"</Description>
+                  <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:HOLD
+1:TRIGGER
+</DropDownList>
+                  <Color>FF0000</Color>
+                  <VariableType>Byte</VariableType>
+                  <Address>CFG_IS_CHRONOS_TRIGGER</Address>
                 </CheatEntry>
                 <CheatEntry>
                   <ID>1337106027</ID>
@@ -386,7 +398,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
-                  <LastState Value="1" RealAddress="0F090000"/>
                   <Color>FF0000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>CFG_ENABLE_INSTANT_SLASH</Address>
@@ -397,7 +408,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
-                  <LastState Value="1" RealAddress="0F090010"/>
                   <Color>FF0000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>CFG_ENABLE_SLASH_SFX</Address>
@@ -408,7 +418,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
-                  <LastState Value="0" RealAddress="0F0900B0"/>
                   <Color>FF0000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>CFG_USE_MOVEMENT_MULT</Address>
@@ -419,7 +428,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
-                  <LastState Value="1" RealAddress="0F0900C0"/>
                   <Color>FF0000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>CFG_ENABLE_PLAYER_MOVE</Address>
@@ -430,7 +438,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
-                  <LastState Value="1" RealAddress="0F0900D0"/>
                   <Color>FF0000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>CFG_ENABLE_EXHAUSTION</Address>
@@ -440,7 +447,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <Description>"TIMER_INTERVAL"</Description>
                   <DropDownList DisplayValueAsItem="1">30:DEFAULT
 </DropDownList>
-                  <LastState Value="30" RealAddress="0F090020"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_TIMER_INTERVAL</Address>
@@ -451,7 +457,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DisplayValueAsItem="1">1:DEFAULT
 5:AUTHENTIC
 </DropDownList>
-                  <LastState Value="1" RealAddress="0F090030"/>
                   <Color>FF0000</Color>
                   <VariableType>Float</VariableType>
                   <Address>CFG_CHRONOS_MULT</Address>
@@ -463,7 +468,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 3:FAST
 0.5:AUTHENTIC
 </DropDownList>
-                  <LastState Value="2" RealAddress="0F090040"/>
                   <Color>FF0000</Color>
                   <VariableType>Float</VariableType>
                   <Address>CFG_CHRONOS_WITHDRAWL_MULT</Address>
@@ -476,7 +480,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
-                  <LastState Value="2" RealAddress="0F090070"/>
                   <Color>FF0000</Color>
                   <VariableType>Float</VariableType>
                   <Address>CFG_CHRONOS_BRIGHTNESS_MAX</Address>
@@ -486,7 +489,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <Description>"Minimum brightness"</Description>
                   <DropDownList DisplayValueAsItem="1">0.349999994:DEFAULT
 </DropDownList>
-                  <LastState Value="0.349999994" RealAddress="0F0900A0"/>
                   <Color>FF0000</Color>
                   <VariableType>Float</VariableType>
                   <Address>CFG_CHRONOS_LIGHT_MIN</Address>
@@ -498,7 +500,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
-                  <LastState Value="50" RealAddress="0F090090"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_CHRONOS_MAX</Address>
@@ -506,7 +507,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                 <CheatEntry>
                   <ID>1337106386</ID>
                   <Description>"Minimum slow down speed"</Description>
-                  <LastState Value="0.1000000015" RealAddress="0F090080"/>
                   <Color>FF0000</Color>
                   <VariableType>Float</VariableType>
                   <Address>CFG_CHRONOS_SLOW_MIN</Address>
@@ -523,7 +523,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 255 0 0 0 0 0 0 0 255 0 0 0:NEON PINK
 100 0 0 0 0 0 0 0 255 0 0 0:PURPLE
 </DropDownList>
-                  <LastState Value="255 0 0 0 255 0 0 0 0 0 0 0" RealAddress="0F090240"/>
                   <Color>FF0000</Color>
                   <VariableType>Array of byte</VariableType>
                   <ByteLength>12</ByteLength>
@@ -536,7 +535,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
-                      <LastState Value="255" RealAddress="0F090240"/>
                       <Color>FF9D9D</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>PHANTOM_EDGE_RGB</Address>
@@ -548,7 +546,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
-                      <LastState Value="255" RealAddress="0F090244"/>
                       <Color>FF9D9D</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>PHANTOM_EDGE_RGB+4</Address>
@@ -560,7 +557,6 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
-                      <LastState Value="0" RealAddress="0F090248"/>
                       <Color>FF9D9D</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>PHANTOM_EDGE_RGB+8</Address>
@@ -634,6 +630,7 @@ if syntaxcheck then return end
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
   enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
   enable_slash_exhaustion = readBytes(getAddress("CFG_ENABLE_EXHAUSTION"),1)
+  is_chronos_trigger = readBytes(getAddress("CFG_IS_CHRONOS_TRIGGER"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -665,7 +662,8 @@ if syntaxcheck then return end
   slash_gauge = SLASH_GAUGE_MAX --used to prevent spamming attacks vs bosses
   chronos_button_pressed = 0
   color_intensity = 0
-
+  trigger_triggered = false
+  trigger_transition = false
 
 
   Game_speed_ptr = getAddress("GAMESPEED")
@@ -724,20 +722,39 @@ function state_ready()
     end
 
     if(chronos_button_pressed==1) then
-     state = TRANS_READY_SLOW
-    end
+      state = TRANS_READY_SLOW
+     end
 end
 
 function transition_ready_slow()
+  trigger_triggered = false
+  trigger_transition = true
   state = S_SLOW
 end
 
 --activated chronos mode
 function state_slow()
+  if(is_chronos_trigger==0) then
     if(chronos_button_pressed==0) then
       state = TRANS_SLOW_SPEED
-      return
     end
+  else
+    if(chronos_button_pressed==1) then
+      if(trigger_transition) then
+      else
+        trigger_triggered = true  --for exit slowdown mode, wait for button release instead
+      end
+    else
+      if(trigger_transition) then
+        trigger_transition = false
+      else
+        if(trigger_triggered) then
+          trigger_triggered = false
+          state = TRANS_SLOW_SPEED
+        end
+      end
+    end
+  end
 
   if(chronos_counter&lt;CHRONOS_COUNTER_MAX) then
     chronos_counter = chronos_counter + CHRONOS_COUNTER_INTERVAL
@@ -1168,7 +1185,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105848</ID>
                       <Description>"GAMESPEED"</Description>
-                      <LastState Value="1" RealAddress="0F0900E0"/>
                       <Color>FF0000</Color>
                       <VariableType>Float</VariableType>
                       <Address>GAMESPEED</Address>
@@ -1220,7 +1236,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106107</ID>
                       <Description>"CFG_USE_MOVEMENT_MULT"</Description>
-                      <LastState Value="0" RealAddress="0F0900B0"/>
                       <Color>C0C0C0</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_USE_MOVEMENT_MULT</Address>
@@ -1228,7 +1243,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106106</ID>
                       <Description>"MOVEMENT_MULT"</Description>
-                      <LastState Value="1" RealAddress="0F0901E0"/>
                       <Color>C0C0C0</Color>
                       <VariableType>Float</VariableType>
                       <Address>MOVEMENT_MULT</Address>
@@ -1351,7 +1365,6 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337105851</ID>
                           <Description>"PHANTOM_COLOR_OPACITY"</Description>
-                          <LastState Value="0" RealAddress="0F090200"/>
                           <Color>C0C0C0</Color>
                           <VariableType>Float</VariableType>
                           <Address>PHANTOM_COLOR_OPACITY</Address>
@@ -1400,7 +1413,6 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337105854</ID>
                           <Description>"PHANTOM_LIGHT_OPACITY"</Description>
-                          <LastState Value="0" RealAddress="0F090220"/>
                           <Color>C0C0C0</Color>
                           <VariableType>Float</VariableType>
                           <Address>PHANTOM_LIGHT_OPACITY</Address>
@@ -1455,7 +1467,6 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105873</ID>
                               <Description>"PHANTOM_EDGE_RGB"</Description>
-                              <LastState Value="255" RealAddress="0F090240"/>
                               <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RGB</Address>
@@ -1501,7 +1512,6 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105875</ID>
                               <Description>"PHANTOM_EDGE_RGB+4"</Description>
-                              <LastState Value="255" RealAddress="0F090244"/>
                               <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RGB+4</Address>
@@ -1548,7 +1558,6 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105877</ID>
                               <Description>"PHANTOM_EDGE_RGB+8"</Description>
-                              <LastState Value="0" RealAddress="0F090248"/>
                               <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RGB+8</Address>
@@ -1622,7 +1631,6 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105856</ID>
                                   <Description>"Value"</Description>
-                                  <LastState Value="255" RealAddress="0F090250"/>
                                   <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF</Address>
@@ -1668,7 +1676,6 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105858</ID>
                                   <Description>"Value"</Description>
-                                  <LastState Value="255" RealAddress="0F090251"/>
                                   <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF+1</Address>
@@ -1714,7 +1721,6 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105857</ID>
                                   <Description>"Value"</Description>
-                                  <LastState Value="255" RealAddress="0F090252"/>
                                   <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF+2</Address>
@@ -1787,7 +1793,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105881</ID>
                       <Description>"value"</Description>
-                      <LastState Value="1" RealAddress="0F090268"/>
                       <VariableType>Float</VariableType>
                       <Address>LIGHT_MULTIPLIER+8</Address>
                     </CheatEntry>
@@ -1838,7 +1843,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106020</ID>
                       <Description>"MAX_BULLET_SPEED_MULT"</Description>
-                      <LastState Value="1" RealAddress="0F090120"/>
                       <VariableType>Float</VariableType>
                       <Address>MAX_BULLET_SPEED_MULT</Address>
                     </CheatEntry>
@@ -1894,7 +1898,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106022</ID>
                       <Description>"FREEZE_BULLET_TIME"</Description>
-                      <LastState Value="0" RealAddress="0F090180"/>
                       <VariableType>Byte</VariableType>
                       <Address>FREEZE_BULLET_TIME</Address>
                     </CheatEntry>
@@ -2031,14 +2034,12 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337106091</ID>
                           <Description>"RELEASE_BULLET_TIME"</Description>
-                          <LastState Value="0" RealAddress="0F090190"/>
                           <VariableType>Byte</VariableType>
                           <Address>RELEASE_BULLET_TIME</Address>
                         </CheatEntry>
                         <CheatEntry>
                           <ID>1337106092</ID>
                           <Description>"ACCELERATION_MULT"</Description>
-                          <LastState Value="1" RealAddress="0F090140"/>
                           <VariableType>Float</VariableType>
                           <Address>ACCELERATION_MULT</Address>
                         </CheatEntry>
@@ -2146,7 +2147,6 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337106155</ID>
                           <Description>"ALMOST_ZERO"</Description>
-                          <LastState Value="0.1000000015" RealAddress="0F0901C0"/>
                           <VariableType>Float</VariableType>
                           <Address>ALMOST_ZERO</Address>
                         </CheatEntry>
@@ -2181,7 +2181,6 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105987</ID>
                       <Description>"DebugPlaySpeed"</Description>
-                      <LastState Value="1" RealAddress="7FF4F862C330"/>
                       <Color>FF0000</Color>
                       <VariableType>Float</VariableType>
                       <Address>sekiro.exe+3B68E30</Address>
@@ -2204,7 +2203,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106346</ID>
                   <Description>"GAMESPEED"</Description>
-                  <LastState Value="1" RealAddress="0F0900E0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>GAMESPEED</Address>
@@ -2212,7 +2210,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337105990</ID>
                   <Description>"PHANTOM_COLOR_OPACITY"</Description>
-                  <LastState Value="0" RealAddress="0F090200"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>PHANTOM_COLOR_OPACITY</Address>
@@ -2220,7 +2217,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106347</ID>
                   <Description>"PHANTOM_LIGHT_OPACITY"</Description>
-                  <LastState Value="0" RealAddress="0F090220"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>PHANTOM_LIGHT_OPACITY</Address>
@@ -2228,7 +2224,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106348</ID>
                   <Description>"PHANTOM_EDGE_RED_W"</Description>
-                  <LastState Value="0" RealAddress="0A8A0240"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>PHANTOM_EDGE_RED_W</Address>
@@ -2236,7 +2231,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106349</ID>
                   <Description>"PHANTOM_EDGE_GREEN_W"</Description>
-                  <LastState Value="0" RealAddress="0A8A0260"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>PHANTOM_EDGE_GREEN_W</Address>
@@ -2244,7 +2238,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106350</ID>
                   <Description>"PHANTOM_EDGE_BLUE_W"</Description>
-                  <LastState Value="0" RealAddress="0A8A0250"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>PHANTOM_EDGE_BLUE_W</Address>
@@ -2252,7 +2245,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106351</ID>
                   <Description>"PHANTOM_DIFF"</Description>
-                  <LastState Value="FFFFFFFF" RealAddress="0F090250"/>
                   <ShowAsHex>1</ShowAsHex>
                   <ShowAsSigned>1</ShowAsSigned>
                   <Color>C0C0C0</Color>
@@ -2262,7 +2254,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106352</ID>
                   <Description>"LIGHT_MULTIPLIER"</Description>
-                  <LastState Value="1" RealAddress="0F090260"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>LIGHT_MULTIPLIER</Address>
@@ -2270,7 +2261,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106353</ID>
                   <Description>"Debug_SpEffect_Type"</Description>
-                  <LastState Value="3" RealAddress="0F0902A0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>Debug_SpEffect_Type</Address>
@@ -2283,7 +2273,6 @@ dealloc(newmem)
 2:Add_Effect_Alternate
 3:RemoveEffect
 </DropDownList>
-                  <LastState Value="3" RealAddress="0F0902A0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>Debug_SpEffect_Type</Address>
@@ -2370,7 +2359,6 @@ dealloc(newmem)
 3501001:execute marker below
 3501020:poise buff
 </DropDownList>
-                  <LastState Value="3451" RealAddress="7FF4F862ED14"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>sekiro.exe+3B68E30</Address>
@@ -2383,7 +2371,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106094</ID>
                   <Description>"ZERO"</Description>
-                  <LastState Value="0" RealAddress="0F0901A0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>ZERO</Address>
@@ -2391,7 +2378,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106093</ID>
                   <Description>"ALMOST_ZERO"</Description>
-                  <LastState Value="0.1000000015" RealAddress="0F0901C0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>ALMOST_ZERO</Address>
@@ -2602,7 +2588,6 @@ dealloc(newmem)
                   <DropDownList DisplayValueAsItem="1">1:NORMAL
 5:USE IN COMBINATION WITH X DMG
 </DropDownList>
-                  <LastState Value="0" RealAddress="0A8A0310"/>
                   <VariableType>4 Bytes</VariableType>
                   <Address>BOSS_MULT</Address>
                 </CheatEntry>
@@ -2668,7 +2653,6 @@ dealloc(newmem)
                   <DropDownList DisplayValueAsItem="1">0:DEFAULT
 5:ENABLED
 </DropDownList>
-                  <LastState Value="5" RealAddress="0F0902B0"/>
                   <VariableType>Binary</VariableType>
                   <BitStart>0</BitStart>
                   <BitLength>8</BitLength>
@@ -2899,7 +2883,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106363</ID>
                   <Description>"Bullet mult"</Description>
-                  <LastState Value="0" RealAddress="0A8A0390"/>
                   <VariableType>4 Bytes</VariableType>
                   <Address>BULLET_NUM</Address>
                 </CheatEntry>
@@ -2915,7 +2898,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106361</ID>
                   <Description>"Player No Revival Item Consume"</Description>
-                  <LastState Value="0" RealAddress="143B68F9B"/>
                   <Color>A60000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>143B68F9B</Address>
@@ -2923,7 +2905,6 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106360</ID>
                   <Description>"Player No Resource Item Consume"</Description>
-                  <LastState Value="0" RealAddress="143B68F9A"/>
                   <Color>A60000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>143B68F9A</Address>
@@ -3116,6 +3097,10 @@ showInfoMessage()
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RGB</Name>
       <Address>0F090240</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>CFG_IS_CHRONOS_TRIGGER</Name>
+      <Address>0F090320</Address>
     </SymbolEntry>
   </UserdefinedSymbols>
 </CheatTable>

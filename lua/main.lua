@@ -49,6 +49,7 @@ if syntaxcheck then return end
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
   enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
   enable_slash_exhaustion = readBytes(getAddress("CFG_ENABLE_EXHAUSTION"),1)
+  is_chronos_trigger = readBytes(getAddress("CFG_IS_CHRONOS_TRIGGER"),1)
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -80,7 +81,8 @@ if syntaxcheck then return end
   slash_gauge = SLASH_GAUGE_MAX --used to prevent spamming attacks vs bosses
   chronos_button_pressed = 0
   color_intensity = 0
-
+  trigger_triggered = false
+  trigger_transition = false
 
 
   Game_speed_ptr = getAddress("GAMESPEED")
@@ -139,20 +141,39 @@ function state_ready()
     end
 
     if(chronos_button_pressed==1) then
-     state = TRANS_READY_SLOW
-    end
+      state = TRANS_READY_SLOW
+     end
 end
 
 function transition_ready_slow()
+  trigger_triggered = false
+  trigger_transition = true
   state = S_SLOW
 end
 
 --activated chronos mode
 function state_slow()
+  if(is_chronos_trigger==0) then
     if(chronos_button_pressed==0) then
       state = TRANS_SLOW_SPEED
-      return
     end
+  else
+    if(chronos_button_pressed==1) then
+      if(trigger_transition) then
+      else
+        trigger_triggered = true  --for exit slowdown mode, wait for button release instead
+      end
+    else
+      if(trigger_transition) then
+        trigger_transition = false
+      else
+        if(trigger_triggered) then
+          trigger_triggered = false
+          state = TRANS_SLOW_SPEED
+        end
+      end
+    end
+  end
 
   if(chronos_counter<CHRONOS_COUNTER_MAX) then
     chronos_counter = chronos_counter + CHRONOS_COUNTER_INTERVAL
