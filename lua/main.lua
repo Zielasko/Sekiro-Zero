@@ -52,7 +52,7 @@ if syntaxcheck then return end
   enable_instant_slash_during_chronos = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS"),1)
   is_chronos_trigger = readBytes(getAddress("CFG_IS_CHRONOS_TRIGGER"),1)
 
-  is_rainbow = 1
+  is_rainbow = readBytes(getAddress("ENABLE_RAINBOW"),1)
   local rainbow_counter = 0
   local rainbow_state = 0 -- add green | sub red | add blue | sub green | add red | sub blue 
   local rb_red = 255
@@ -546,7 +546,7 @@ function checkChronosInput()
     end
     writeFloat(Phantom_param_ptr,color_intensity)
 
-    if(is_rainbow>0) then
+    if(is_rainbow>0 and state>S_READY) then
       rainbow_counter = rainbow_counter + 1
       if(rainbow_counter>255/RAINBOW_STEP) then
         rainbow_state = (rainbow_state + 1)%6

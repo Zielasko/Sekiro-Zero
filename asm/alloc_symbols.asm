@@ -54,10 +54,10 @@ CFG_CHRONOS_LIGHT_MIN:
 dd (float)0.35
 
 
-/* CFG_USE_MOVEMENT_MULT and CFG_ENABLE_PLAYER_MOVE are mutually exclusive */
+/* CFG_USE_MOVEMENT_MULT and CFG_ENABLE_PLAYER_MOVE were mutually exclusive */
 globalalloc(CFG_USE_MOVEMENT_MULT,1)
 CFG_USE_MOVEMENT_MULT:
-db #1
+db #0
 
 globalalloc(CFG_ENABLE_PLAYER_MOVE,1)
 CFG_ENABLE_PLAYER_MOVE:
@@ -130,9 +130,16 @@ dd #255
 PHANTOM_EDGE_RGB+8:
 dd #255
 
+globalalloc(ENABLE_RAINBOW,1)
+ENABLE_RAINBOW:
+db #0
+
 globalalloc(PHANTOM_DIFF,4,"sekiro.exe"+0x108223D)
 PHANTOM_DIFF:
 db 0xff 0xff 0xff 0xff
+
+globalalloc(BULLET_NUM,8,"sekiro.exe"+AF68AA)
+dd #5
 
 
 //global Lighting
@@ -148,6 +155,7 @@ dd (float)1.0
 
 LIGHT_MULTIPLIER+0xc:
 dd (float)1.0
+
 
 /*
   Argument for the debug_add_spEffect function

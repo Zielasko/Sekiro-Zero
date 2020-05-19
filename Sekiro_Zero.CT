@@ -81,10 +81,10 @@ CFG_CHRONOS_LIGHT_MIN:
 dd (float)0.35
 
 
-/* CFG_USE_MOVEMENT_MULT and CFG_ENABLE_PLAYER_MOVE are mutually exclusive */
+/* CFG_USE_MOVEMENT_MULT and CFG_ENABLE_PLAYER_MOVE were mutually exclusive */
 globalalloc(CFG_USE_MOVEMENT_MULT,1)
 CFG_USE_MOVEMENT_MULT:
-db #1
+db #0
 
 globalalloc(CFG_ENABLE_PLAYER_MOVE,1)
 CFG_ENABLE_PLAYER_MOVE:
@@ -157,9 +157,17 @@ dd #255
 PHANTOM_EDGE_RGB+8:
 dd #255
 
+globalalloc(ENABLE_RAINBOW,1)
+ENABLE_RAINBOW:
+db #0
+
 globalalloc(PHANTOM_DIFF,4,"sekiro.exe"+0x108223D)
 PHANTOM_DIFF:
 db 0xff 0xff 0xff 0xff
+
+globalalloc(BULLET_NUM,8,"sekiro.exe"+AF68AA)
+BULLET_NUM:
+dd #5
 
 
 //global Lighting
@@ -175,6 +183,7 @@ dd (float)1.0
 
 LIGHT_MULTIPLIER+0xc:
 dd (float)1.0
+
 
 /*
   Argument for the debug_add_spEffect function
@@ -365,6 +374,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 163:VK_RCONTROL
 165:VK_RMENU
 </DropDownList>
+                  <LastState Value="49" RealAddress="00670070"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_CHRONOS_KEYBOARD_KEY</Address>
@@ -393,6 +403,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 19:ThumbRightX
 20:ThumbRightY
 </DropDownList>
+                  <LastState Value="8" RealAddress="00670080"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_CHRONOS_CONTROLLER_BUTTON</Address>
@@ -403,6 +414,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:HOLD
 1:TRIGGER
 </DropDownList>
+                  <LastState Value="1" RealAddress="00670030"/>
                   <Color>FF0000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>CFG_IS_CHRONOS_TRIGGER</Address>
@@ -412,6 +424,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                   <Description>"TIMER_INTERVAL"</Description>
                   <DropDownList DisplayValueAsItem="1">30:DEFAULT
 </DropDownList>
+                  <LastState Value="30" RealAddress="00670040"/>
                   <Color>FF0000</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>CFG_TIMER_INTERVAL</Address>
@@ -429,6 +442,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
+                      <LastState Value="1" RealAddress="00670000"/>
                       <Color>5C5C5C</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_ENABLE_INSTANT_SLASH</Address>
@@ -439,6 +453,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
+                      <LastState Value="1" RealAddress="00670010"/>
                       <Color>5C5C5C</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_ENABLE_SLASH_SFX</Address>
@@ -449,6 +464,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
+                      <LastState Value="1" RealAddress="00670020"/>
                       <Color>5C5C5C</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS</Address>
@@ -459,6 +475,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
+                      <LastState Value="1" RealAddress="006700F0"/>
                       <Color>5C5C5C</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_ENABLE_EXHAUSTION</Address>
@@ -467,17 +484,18 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                 </CheatEntry>
                 <CheatEntry>
                   <ID>1337106396</ID>
-                  <Description>"------------- gravity slow and player normal speed are mutually exclusive -------------"</Description>
+                  <Description>"------------- gravity slow might break some aerial attacks -------------"</Description>
                   <LastState Value="" RealAddress="00000000"/>
                   <Color>FF3C9D</Color>
                   <GroupHeader>1</GroupHeader>
                   <CheatEntries>
                     <CheatEntry>
                       <ID>1337106108</ID>
-                      <Description>"Enable gravity slow (reduces movement distance)"</Description>
+                      <Description>"Enable gravity slow"</Description>
                       <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
+                      <LastState Value="0" RealAddress="006700D0"/>
                       <Color>FF00FF</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_USE_MOVEMENT_MULT</Address>
@@ -488,6 +506,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
 1:ENABLED
 </DropDownList>
+                      <LastState Value="0" RealAddress="006700E0"/>
                       <Color>FF00FF</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_ENABLE_PLAYER_MOVE</Address>
@@ -507,6 +526,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <DropDownList DisplayValueAsItem="1">1:DEFAULT
 5:AUTHENTIC
 </DropDownList>
+                      <LastState Value="1" RealAddress="00670050"/>
                       <Color>E1AE00</Color>
                       <VariableType>Float</VariableType>
                       <Address>CFG_CHRONOS_MULT</Address>
@@ -518,6 +538,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 3:FAST
 0.5:AUTHENTIC
 </DropDownList>
+                      <LastState Value="2" RealAddress="00670060"/>
                       <Color>E1AE00</Color>
                       <VariableType>Float</VariableType>
                       <Address>CFG_CHRONOS_WITHDRAWL_MULT</Address>
@@ -530,6 +551,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
+                      <LastState Value="2" RealAddress="00670090"/>
                       <Color>E1AE00</Color>
                       <VariableType>Float</VariableType>
                       <Address>CFG_CHRONOS_BRIGHTNESS_MAX</Address>
@@ -539,6 +561,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                       <Description>"Minimum brightness"</Description>
                       <DropDownList DisplayValueAsItem="1">0.349999994:DEFAULT
 </DropDownList>
+                      <LastState Value="0.349999994" RealAddress="006700C0"/>
                       <Color>E1AE00</Color>
                       <VariableType>Float</VariableType>
                       <Address>CFG_CHRONOS_LIGHT_MIN</Address>
@@ -550,6 +573,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
+                      <LastState Value="50" RealAddress="006700B0"/>
                       <Color>E1AE00</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>CFG_CHRONOS_MAX</Address>
@@ -557,6 +581,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
                     <CheatEntry>
                       <ID>1337106386</ID>
                       <Description>"Minimum slow down speed"</Description>
+                      <LastState Value="0.200000003" RealAddress="006700A0"/>
                       <Color>E1AE00</Color>
                       <VariableType>Float</VariableType>
                       <Address>CFG_CHRONOS_SLOW_MIN</Address>
@@ -575,6 +600,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 255 0 0 0 0 0 0 0 255 0 0 0:NEON PINK
 100 0 0 0 0 0 0 0 255 0 0 0:PURPLE
 </DropDownList>
+                  <LastState Value="165 0 0 0 0 0 0 0 4 1 0 0" RealAddress="00670280"/>
                   <Color>FF0000</Color>
                   <VariableType>Array of byte</VariableType>
                   <ByteLength>12</ByteLength>
@@ -587,6 +613,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
+                      <LastState Value="165" RealAddress="00670280"/>
                       <Color>A6A6FF</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>PHANTOM_EDGE_RGB</Address>
@@ -598,6 +625,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
+                      <LastState Value="0" RealAddress="00670284"/>
                       <Color>80FF80</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>PHANTOM_EDGE_RGB+4</Address>
@@ -609,11 +637,23 @@ unregisterSymbol("FREEZE_BULLET_TIME")
 1:MEDIUM
 2:DEFAULT
 </DropDownList>
+                      <LastState Value="260" RealAddress="00670288"/>
                       <Color>FFA6A6</Color>
                       <VariableType>4 Bytes</VariableType>
                       <Address>PHANTOM_EDGE_RGB+8</Address>
                     </CheatEntry>
                   </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106407</ID>
+                  <Description>"Enable Rainbow mode"</Description>
+                  <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">0:DISABLED
+1:ENABLED
+</DropDownList>
+                  <LastState Value="1" RealAddress="00670290"/>
+                  <Color>5C5C5C</Color>
+                  <VariableType>Byte</VariableType>
+                  <Address>ENABLE_RAINBOW</Address>
                 </CheatEntry>
               </CheatEntries>
             </CheatEntry>
@@ -692,13 +732,13 @@ if syntaxcheck then return end
   enable_instant_slash_during_chronos = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS"),1)
   is_chronos_trigger = readBytes(getAddress("CFG_IS_CHRONOS_TRIGGER"),1)
 
-  is_rainbow = 0
+  is_rainbow = readBytes(getAddress("ENABLE_RAINBOW"),1)
   local rainbow_counter = 0
   local rainbow_state = 0 -- add green | sub red | add blue | sub green | add red | sub blue
   local rb_red = 255
   local rb_green = 0
   local rb_blue = 0
-  RAINBOW_STEP = 10
+  RAINBOW_STEP = 5
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -1186,7 +1226,7 @@ function checkChronosInput()
     end
     writeFloat(Phantom_param_ptr,color_intensity)
 
-    if(is_rainbow&gt;0) then
+    if(is_rainbow&gt;0 and state&gt;S_READY) then
       rainbow_counter = rainbow_counter + 1
       if(rainbow_counter&gt;255/RAINBOW_STEP) then
         rainbow_state = (rainbow_state + 1)%6
@@ -1264,7 +1304,7 @@ if syntaxcheck then return end
                   <ID>1337105847</ID>
                   <Description>"[Global Speed]"</Description>
                   <Options moHideChildren="1"/>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FF0000</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{ Game   : sekiro.exe
@@ -1308,6 +1348,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105848</ID>
                       <Description>"GAMESPEED"</Description>
+                      <LastState Value="1" RealAddress="00670100"/>
                       <Color>FF0000</Color>
                       <VariableType>Float</VariableType>
                       <Address>GAMESPEED</Address>
@@ -1318,7 +1359,7 @@ dealloc(newmem)
                   <ID>1337106103</ID>
                   <Description>"[Movement Distance Multiplier]"</Description>
                   <Options moHideChildren="1"/>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FF0000</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
@@ -1359,6 +1400,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106107</ID>
                       <Description>"CFG_USE_MOVEMENT_MULT"</Description>
+                      <LastState Value="0" RealAddress="006700D0"/>
                       <Color>C0C0C0</Color>
                       <VariableType>Byte</VariableType>
                       <Address>CFG_USE_MOVEMENT_MULT</Address>
@@ -1366,6 +1408,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106106</ID>
                       <Description>"MOVEMENT_MULT"</Description>
+                      <LastState Value="1" RealAddress="00670200"/>
                       <Color>C0C0C0</Color>
                       <VariableType>Float</VariableType>
                       <Address>MOVEMENT_MULT</Address>
@@ -1375,7 +1418,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337105746</ID>
                   <Description>"movement speed mult (counteracts non gravity movement slowdown)"</Description>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FFFF00</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{ Game   : sekiro.exe
@@ -1420,6 +1463,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105747</ID>
                       <Description>"MOVEMENT_DIST_MULT"</Description>
+                      <LastState Value="1" RealAddress="00670220"/>
                       <Color>808080</Color>
                       <VariableType>Float</VariableType>
                       <Address>MOVEMENT_DIST_MULT</Address>
@@ -1430,7 +1474,7 @@ dealloc(newmem)
                   <ID>1337105849</ID>
                   <Description>"[PhantomParam replace]"</Description>
                   <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FF8080</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
@@ -1494,7 +1538,7 @@ dealloc(newmem)
                       <ID>1337105850</ID>
                       <Description>"Phantom Edge Opacity"</Description>
                       <Options moHideChildren="1"/>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <Color>FF6464</Color>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{ Game   : sekiro.exe
@@ -1542,6 +1586,7 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337105851</ID>
                           <Description>"PHANTOM_COLOR_OPACITY"</Description>
+                          <LastState Value="0" RealAddress="00670240"/>
                           <Color>C0C0C0</Color>
                           <VariableType>Float</VariableType>
                           <Address>PHANTOM_COLOR_OPACITY</Address>
@@ -1552,7 +1597,7 @@ dealloc(newmem)
                       <ID>1337105853</ID>
                       <Description>"Phantom Light opacity"</Description>
                       <Options moHideChildren="1"/>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <Color>46A3FF</Color>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>define(address,"sekiro.exe"+108242F)
@@ -1590,6 +1635,7 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337105854</ID>
                           <Description>"PHANTOM_LIGHT_OPACITY"</Description>
+                          <LastState Value="0" RealAddress="00670260"/>
                           <Color>C0C0C0</Color>
                           <VariableType>Float</VariableType>
                           <Address>PHANTOM_LIGHT_OPACITY</Address>
@@ -1600,7 +1646,7 @@ dealloc(newmem)
                       <ID>1337105871</ID>
                       <Description>"Edge RGB"</Description>
                       <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                      <LastState Value="" Activated="1" RealAddress="00000000"/>
+                      <LastState Value="" RealAddress="00000000"/>
                       <Color>FF0080</Color>
                       <GroupHeader>1</GroupHeader>
                       <CheatEntries>
@@ -1608,7 +1654,7 @@ dealloc(newmem)
                           <ID>1337105872</ID>
                           <Description>"Edge RED"</Description>
                           <Options moHideChildren="1"/>
-                          <LastState Activated="1"/>
+                          <LastState/>
                           <Color>0000FF</Color>
                           <VariableType>Auto Assembler Script</VariableType>
                           <AssemblerScript>define(address,"sekiro.exe"+10822CD)
@@ -1644,6 +1690,7 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105873</ID>
                               <Description>"PHANTOM_EDGE_RGB"</Description>
+                              <LastState Value="165" RealAddress="00670280"/>
                               <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RGB</Address>
@@ -1654,7 +1701,7 @@ dealloc(newmem)
                           <ID>1337105874</ID>
                           <Description>"Edge GREEN"</Description>
                           <Options moHideChildren="1"/>
-                          <LastState Activated="1"/>
+                          <LastState/>
                           <Color>00FF00</Color>
                           <VariableType>Auto Assembler Script</VariableType>
                           <AssemblerScript>define(address,"sekiro.exe"+10822DE)
@@ -1689,6 +1736,7 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105875</ID>
                               <Description>"PHANTOM_EDGE_RGB+4"</Description>
+                              <LastState Value="0" RealAddress="00670284"/>
                               <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RGB+4</Address>
@@ -1699,7 +1747,7 @@ dealloc(newmem)
                           <ID>1337105876</ID>
                           <Description>"Edge BLUE"</Description>
                           <Options moHideChildren="1"/>
-                          <LastState Activated="1"/>
+                          <LastState/>
                           <Color>FF0000</Color>
                           <VariableType>Auto Assembler Script</VariableType>
                           <AssemblerScript>define(address,"sekiro.exe"+10822F3)
@@ -1735,6 +1783,7 @@ dealloc(newmem)
                             <CheatEntry>
                               <ID>1337105877</ID>
                               <Description>"PHANTOM_EDGE_RGB+8"</Description>
+                              <LastState Value="260" RealAddress="00670288"/>
                               <Color>C0C0C0</Color>
                               <VariableType>4 Bytes</VariableType>
                               <Address>PHANTOM_EDGE_RGB+8</Address>
@@ -1747,7 +1796,7 @@ dealloc(newmem)
                       <ID>1337105862</ID>
                       <Description>"Diffuse RGB"</Description>
                       <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                      <LastState Value="" Activated="1" RealAddress="00000000"/>
+                      <LastState Value="" RealAddress="00000000"/>
                       <Color>FF359A</Color>
                       <GroupHeader>1</GroupHeader>
                       <CheatEntries>
@@ -1755,7 +1804,7 @@ dealloc(newmem)
                           <ID>1337105855</ID>
                           <Description>"[Phantom Diffuse RGB]"</Description>
                           <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                          <LastState Activated="1"/>
+                          <LastState/>
                           <Color>FF0080</Color>
                           <VariableType>Auto Assembler Script</VariableType>
                           <AssemblerScript>[ENABLE]
@@ -1772,7 +1821,7 @@ dealloc(newmem)
                               <ID>1337105859</ID>
                               <Description>"RED"</Description>
                               <Options moHideChildren="1"/>
-                              <LastState Activated="1"/>
+                              <LastState/>
                               <Color>0000FF</Color>
                               <VariableType>Auto Assembler Script</VariableType>
                               <AssemblerScript>define(address,"sekiro.exe"+108223D)
@@ -1808,6 +1857,7 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105856</ID>
                                   <Description>"Value"</Description>
+                                  <LastState Value="255" RealAddress="006702A0"/>
                                   <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF</Address>
@@ -1818,7 +1868,7 @@ dealloc(newmem)
                               <ID>1337105860</ID>
                               <Description>"GREEN"</Description>
                               <Options moHideChildren="1"/>
-                              <LastState Activated="1"/>
+                              <LastState/>
                               <Color>00FF00</Color>
                               <VariableType>Auto Assembler Script</VariableType>
                               <AssemblerScript>define(address,"sekiro.exe"+108224E)
@@ -1853,6 +1903,7 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105858</ID>
                                   <Description>"Value"</Description>
+                                  <LastState Value="255" RealAddress="006702A1"/>
                                   <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF+1</Address>
@@ -1863,7 +1914,7 @@ dealloc(newmem)
                               <ID>1337105861</ID>
                               <Description>"BLUE"</Description>
                               <Options moHideChildren="1"/>
-                              <LastState Activated="1"/>
+                              <LastState/>
                               <Color>FF0000</Color>
                               <VariableType>Auto Assembler Script</VariableType>
                               <AssemblerScript>define(address,"sekiro.exe"+1082263)
@@ -1898,6 +1949,7 @@ dealloc(newmem)
                                 <CheatEntry>
                                   <ID>1337105857</ID>
                                   <Description>"Value"</Description>
+                                  <LastState Value="255" RealAddress="006702A2"/>
                                   <Color>C0C0C0</Color>
                                   <VariableType>Byte</VariableType>
                                   <Address>PHANTOM_DIFF+2</Address>
@@ -1914,7 +1966,7 @@ dealloc(newmem)
                   <ID>1337105878</ID>
                   <Description>"[Light]"</Description>
                   <Options moHideChildren="1"/>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FF00FF</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
@@ -1970,6 +2022,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105881</ID>
                       <Description>"value"</Description>
+                      <LastState Value="1" RealAddress="006702C8"/>
                       <VariableType>Float</VariableType>
                       <Address>LIGHT_MULTIPLIER+8</Address>
                     </CheatEntry>
@@ -1979,7 +2032,7 @@ dealloc(newmem)
                   <ID>1337106019</ID>
                   <Description>"[Bullet Speed Limiter]"</Description>
                   <Options moHideChildren="1"/>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FF0080</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
@@ -2020,6 +2073,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106020</ID>
                       <Description>"MAX_BULLET_SPEED_MULT"</Description>
+                      <LastState Value="1" RealAddress="00670140"/>
                       <VariableType>Float</VariableType>
                       <Address>MAX_BULLET_SPEED_MULT</Address>
                     </CheatEntry>
@@ -2029,7 +2083,7 @@ dealloc(newmem)
                   <ID>1337106021</ID>
                   <Description>"[Freeze Bullet Life Timer]"</Description>
                   <Options moHideChildren="1"/>
-                  <LastState Activated="1"/>
+                  <LastState/>
                   <Color>FF0080</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
@@ -2075,6 +2129,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106022</ID>
                       <Description>"FREEZE_BULLET_TIME"</Description>
+                      <LastState Value="0" RealAddress="006701A0"/>
                       <VariableType>Byte</VariableType>
                       <Address>FREEZE_BULLET_TIME</Address>
                     </CheatEntry>
@@ -2091,7 +2146,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106023</ID>
                       <Description>"Disable out of range gravity"</Description>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>define(address,"sekiro.exe"+AFE681)
 define(bytes,F3 44 0F 10 40 20)
@@ -2127,7 +2182,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106024</ID>
                       <Description>"Disable in range gravity"</Description>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>define(address,"sekiro.exe"+AFE64E)
 define(bytes,F3 44 0F 10 40 1C)
@@ -2164,7 +2219,7 @@ dealloc(newmem)
                       <ID>1337106090</ID>
                       <Description>"Bullet acceleration in Range"</Description>
                       <Options moHideChildren="1"/>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   Bullet acceleration in Range
@@ -2211,12 +2266,14 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337106091</ID>
                           <Description>"RELEASE_BULLET_TIME"</Description>
+                          <LastState Value="1" RealAddress="006701B0"/>
                           <VariableType>Byte</VariableType>
                           <Address>RELEASE_BULLET_TIME</Address>
                         </CheatEntry>
                         <CheatEntry>
                           <ID>1337106092</ID>
                           <Description>"ACCELERATION_MULT"</Description>
+                          <LastState Value="1" RealAddress="00670160"/>
                           <VariableType>Float</VariableType>
                           <Address>ACCELERATION_MULT</Address>
                         </CheatEntry>
@@ -2225,7 +2282,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106089</ID>
                       <Description>"Bullet acceleration out of range"</Description>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   Bullet acceleration out of range
@@ -2273,7 +2330,7 @@ dealloc(newmem)
                       <ID>1337106088</ID>
                       <Description>"Bullet min velocity"</Description>
                       <Options moHideChildren="1"/>
-                      <LastState Activated="1"/>
+                      <LastState/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   Bullet min velocity
@@ -2324,6 +2381,7 @@ dealloc(newmem)
                         <CheatEntry>
                           <ID>1337106155</ID>
                           <Description>"ALMOST_ZERO"</Description>
+                          <LastState Value="0.1000000015" RealAddress="006701E0"/>
                           <VariableType>Float</VariableType>
                           <Address>ALMOST_ZERO</Address>
                         </CheatEntry>
@@ -2358,6 +2416,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105987</ID>
                       <Description>"DebugPlaySpeed"</Description>
+                      <LastState Value="1" RealAddress="7FF4F6B37290"/>
                       <Color>FF0000</Color>
                       <VariableType>Float</VariableType>
                       <Address>sekiro.exe+3B68E30</Address>
@@ -2380,6 +2439,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106346</ID>
                   <Description>"GAMESPEED"</Description>
+                  <LastState Value="1" RealAddress="00670100"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>GAMESPEED</Address>
@@ -2387,6 +2447,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337105990</ID>
                   <Description>"PHANTOM_COLOR_OPACITY"</Description>
+                  <LastState Value="0" RealAddress="00670240"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>PHANTOM_COLOR_OPACITY</Address>
@@ -2394,6 +2455,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106347</ID>
                   <Description>"PHANTOM_LIGHT_OPACITY"</Description>
+                  <LastState Value="0" RealAddress="00670260"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>PHANTOM_LIGHT_OPACITY</Address>
@@ -2401,6 +2463,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106348</ID>
                   <Description>"PHANTOM_EDGE_RED_W"</Description>
+                  <LastState Value="0" RealAddress="0A8A0240"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>PHANTOM_EDGE_RED_W</Address>
@@ -2408,6 +2471,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106349</ID>
                   <Description>"PHANTOM_EDGE_GREEN_W"</Description>
+                  <LastState Value="0" RealAddress="0A8A0260"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>PHANTOM_EDGE_GREEN_W</Address>
@@ -2415,6 +2479,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106350</ID>
                   <Description>"PHANTOM_EDGE_BLUE_W"</Description>
+                  <LastState Value="0" RealAddress="0A8A0250"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>PHANTOM_EDGE_BLUE_W</Address>
@@ -2422,6 +2487,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106351</ID>
                   <Description>"PHANTOM_DIFF"</Description>
+                  <LastState Value="FFFFFFFF" RealAddress="006702A0"/>
                   <ShowAsHex>1</ShowAsHex>
                   <ShowAsSigned>1</ShowAsSigned>
                   <Color>C0C0C0</Color>
@@ -2431,6 +2497,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106352</ID>
                   <Description>"LIGHT_MULTIPLIER"</Description>
+                  <LastState Value="1" RealAddress="006702C0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>LIGHT_MULTIPLIER</Address>
@@ -2438,6 +2505,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106353</ID>
                   <Description>"Debug_SpEffect_Type"</Description>
+                  <LastState Value="3" RealAddress="00670300"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>Debug_SpEffect_Type</Address>
@@ -2450,6 +2518,7 @@ dealloc(newmem)
 2:Add_Effect_Alternate
 3:RemoveEffect
 </DropDownList>
+                  <LastState Value="3" RealAddress="00670300"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>Debug_SpEffect_Type</Address>
@@ -2536,6 +2605,7 @@ dealloc(newmem)
 3501001:execute marker below
 3501020:poise buff
 </DropDownList>
+                  <LastState Value="3451" RealAddress="7FF4F6B39C74"/>
                   <Color>C0C0C0</Color>
                   <VariableType>4 Bytes</VariableType>
                   <Address>sekiro.exe+3B68E30</Address>
@@ -2548,6 +2618,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106094</ID>
                   <Description>"ZERO"</Description>
+                  <LastState Value="0" RealAddress="006701C0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>ZERO</Address>
@@ -2555,6 +2626,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106093</ID>
                   <Description>"ALMOST_ZERO"</Description>
+                  <LastState Value="0.1000000015" RealAddress="006701E0"/>
                   <Color>C0C0C0</Color>
                   <VariableType>Float</VariableType>
                   <Address>ALMOST_ZERO</Address>
@@ -2765,6 +2837,7 @@ dealloc(newmem)
                   <DropDownList DisplayValueAsItem="1">1:NORMAL
 5:USE IN COMBINATION WITH X DMG
 </DropDownList>
+                  <LastState Value="5" RealAddress="00670350"/>
                   <VariableType>4 Bytes</VariableType>
                   <Address>BOSS_MULT</Address>
                 </CheatEntry>
@@ -2774,7 +2847,7 @@ dealloc(newmem)
               <ID>1337106358</ID>
               <Description>"Erratic SFX"</Description>
               <Options moHideChildren="1"/>
-              <LastState/>
+              <LastState Activated="1"/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>{
   Changes how certain buff and fog sfx is rendered
@@ -2830,6 +2903,7 @@ dealloc(newmem)
                   <DropDownList DisplayValueAsItem="1">0:DEFAULT
 5:ENABLED
 </DropDownList>
+                  <LastState Value="5" RealAddress="00670360"/>
                   <VariableType>Binary</VariableType>
                   <BitStart>0</BitStart>
                   <BitLength>8</BitLength>
@@ -2842,7 +2916,7 @@ dealloc(newmem)
               <ID>1337106364</ID>
               <Description>"[Multiply all Bullets]"</Description>
               <Options moHideChildren="1"/>
-              <LastState Value="" RealAddress="00000000"/>
+              <LastState Value="" Activated="1" RealAddress="00000000"/>
               <GroupHeader>1</GroupHeader>
               <CheatEntries>
                 <CheatEntry>
@@ -2863,13 +2937,10 @@ define(bytes,0F B7 80 80 00 00 00)
 
 assert(address,bytes)
 alloc(newmem,$1000,"sekiro.exe"+AF68AA)
-globalalloc(BULLET_NUM,8,address)
 
 label(code)
 label(return)
 
-BULLET_NUM:
-dd #3
 newmem:
 
 code:
@@ -3044,7 +3115,7 @@ newmem:
 
 code:
   movsx eax,word ptr [rax+00000082]
-  add eax,#100
+  add eax,#50
   jmp return
 
 address:
@@ -3298,6 +3369,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106363</ID>
                   <Description>"Bullet mult"</Description>
+                  <LastState Value="21" RealAddress="006702B0"/>
                   <VariableType>4 Bytes</VariableType>
                   <Address>BULLET_NUM</Address>
                 </CheatEntry>
@@ -3313,6 +3385,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106361</ID>
                   <Description>"Player No Revival Item Consume"</Description>
+                  <LastState Value="1" RealAddress="143B68F9B"/>
                   <Color>A60000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>143B68F9B</Address>
@@ -3320,6 +3393,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337106360</ID>
                   <Description>"Player No Resource Item Consume"</Description>
+                  <LastState Value="1" RealAddress="143B68F9A"/>
                   <Color>A60000</Color>
                   <VariableType>Byte</VariableType>
                   <Address>143B68F9A</Address>
@@ -3367,55 +3441,55 @@ showInfoMessage()
   <UserdefinedSymbols>
     <SymbolEntry>
       <Name>CFG_ENABLE_INSTANT_SLASH</Name>
-      <Address>19710000</Address>
+      <Address>00670000</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_SLASH_SFX</Name>
-      <Address>19710010</Address>
+      <Address>00670010</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_TIMER_INTERVAL</Name>
-      <Address>19710040</Address>
+      <Address>00670040</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MULT</Name>
-      <Address>19710050</Address>
+      <Address>00670050</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_WITHDRAWL_MULT</Name>
-      <Address>19710060</Address>
+      <Address>00670060</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_KEYBOARD_KEY</Name>
-      <Address>19710070</Address>
+      <Address>00670070</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_CONTROLLER_BUTTON</Name>
-      <Address>19710080</Address>
+      <Address>00670080</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_BRIGHTNESS_MAX</Name>
-      <Address>19710090</Address>
+      <Address>00670090</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>GAMESPEED</Name>
-      <Address>19710100</Address>
+      <Address>00670100</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MAX_BULLET_SPEED_MULT</Name>
-      <Address>19710140</Address>
+      <Address>00670140</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>FREEZE_BULLET_TIME</Name>
-      <Address>197101A0</Address>
+      <Address>006701A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_COLOR_OPACITY</Name>
-      <Address>19710240</Address>
+      <Address>00670240</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_LIGHT_OPACITY</Name>
-      <Address>19710260</Address>
+      <Address>00670260</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RED_W</Name>
@@ -3431,95 +3505,95 @@ showInfoMessage()
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_DIFF</Name>
-      <Address>19710290</Address>
+      <Address>006702A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>LIGHT_MULTIPLIER</Name>
-      <Address>197102A0</Address>
+      <Address>006702C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>Debug_SpEffect_Type</Name>
-      <Address>197102E0</Address>
+      <Address>00670300</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>light_matrix3</Name>
-      <Address>2E3403C0</Address>
+      <Address>00670360</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MAX</Name>
-      <Address>197100B0</Address>
+      <Address>006700B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_USE_MOVEMENT_MULT</Name>
-      <Address>197100D0</Address>
+      <Address>006700D0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_PLAYER_MOVE</Name>
-      <Address>197100E0</Address>
+      <Address>006700E0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ACCELERATION_MULT</Name>
-      <Address>19710160</Address>
+      <Address>00670160</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ACCELERATION_ADD</Name>
-      <Address>19710180</Address>
+      <Address>00670180</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>RELEASE_BULLET_TIME</Name>
-      <Address>197101B0</Address>
+      <Address>006701B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ZERO</Name>
-      <Address>197101C0</Address>
+      <Address>006701C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ALMOST_ZERO</Name>
-      <Address>197101E0</Address>
+      <Address>006701E0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MOVEMENT_MULT</Name>
-      <Address>19710200</Address>
+      <Address>00670200</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>DMGCUTRATE_REPLACE</Name>
-      <Address>19710300</Address>
+      <Address>00670310</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>SLASHCUTRATE_REPLACE</Name>
-      <Address>19710320</Address>
+      <Address>00670330</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_SLOW_MIN</Name>
-      <Address>197100A0</Address>
+      <Address>006700A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_LIGHT_MIN</Name>
-      <Address>197100C0</Address>
+      <Address>006700C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>BOSS_MULT</Name>
-      <Address>19710340</Address>
+      <Address>00670350</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>BULLET_NUM</Name>
-      <Address>197102F0</Address>
+      <Address>006702B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_EXHAUSTION</Name>
-      <Address>197100F0</Address>
+      <Address>006700F0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RGB</Name>
-      <Address>19710280</Address>
+      <Address>00670280</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_IS_CHRONOS_TRIGGER</Name>
-      <Address>19710030</Address>
+      <Address>00670030</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS</Name>
-      <Address>19710020</Address>
+      <Address>00670020</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>size_add</Name>
@@ -3531,11 +3605,15 @@ showInfoMessage()
     </SymbolEntry>
     <SymbolEntry>
       <Name>MOVEMENT_DIST_MULT</Name>
-      <Address>19710220</Address>
+      <Address>00670220</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>even_bullet</Name>
-      <Address>19710350</Address>
+      <Address>006703D0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>ENABLE_RAINBOW</Name>
+      <Address>00670290</Address>
     </SymbolEntry>
   </UserdefinedSymbols>
 </CheatTable>
