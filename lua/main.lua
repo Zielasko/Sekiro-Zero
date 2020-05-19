@@ -49,7 +49,16 @@ if syntaxcheck then return end
   enable_airtime = readBytes(getAddress("CFG_USE_MOVEMENT_MULT"),1)
   enable_player_during_stopped_time = readBytes(getAddress("CFG_ENABLE_PLAYER_MOVE"),1)
   enable_slash_exhaustion = readBytes(getAddress("CFG_ENABLE_EXHAUSTION"),1)
+  enable_instant_slash_during_chronos = readBytes(getAddress("CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS"),1)
   is_chronos_trigger = readBytes(getAddress("CFG_IS_CHRONOS_TRIGGER"),1)
+
+  is_rainbow = 1
+  local rainbow_counter = 0
+  local rainbow_state = 0 -- add green | sub red | add blue | sub green | add red | sub blue 
+  local rb_red = 255
+  local rb_green = 0
+  local rb_blue = 0
+  RAINBOW_STEP = 5
 
   --TIMER_INTERVAL: time in ms to wait between cycles (default:20)
   TIMER_INTERVAL = readInteger(getAddress("CFG_TIMER_INTERVAL"))
@@ -92,7 +101,9 @@ if syntaxcheck then return end
   Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME") -- 0 off 2 on 1 transition to normal
   Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
   Movement_mult_ptr = getAddress("MOVEMENT_MULT")
+  Movement_dist_mult_ptr = getAddress("MOVEMENT_DIST_MULT")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
+  Phantom_param_rgb_ptr = getAddress("PHANTOM_EDGE_RGB")
   Light_ptr = getAddress("LIGHT_MULTIPLIER")
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
   SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
@@ -239,15 +250,18 @@ end
 function slash_transition_init()
   state_slash = SLASH_S_READY
 end
+
 function slash_state_ready()
 
   --check if player is attacking
-  if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1)))) then --check speed slash [optional] (controller_table==nil) 
-    state_slash = SLASH_TRANS_READY_ACTIVE
-   end
+  if(enable_instant_slash_during_chronos>0 or state==S_READY) then
+    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1)))) then --check speed slash [optional] (controller_table==nil) 
+        state_slash = SLASH_TRANS_READY_ACTIVE
+     end
 
-  if(slash_gauge<SLASH_GAUGE_MAX) then
-     slash_gauge = slash_gauge + 5 * (TIMER_INTERVAL/20)
+    if(slash_gauge<SLASH_GAUGE_MAX) then
+        slash_gauge = slash_gauge + 5 * (TIMER_INTERVAL/20)
+    end
   end
 
   --state_slash = SLASH_S_READY
@@ -520,6 +534,7 @@ function checkChronosInput()
 
      if(enable_airtime>0) then
         writeFloat(Movement_mult_ptr,speed)
+        writeFloat(Movement_dist_mult_ptr,(1/speed))
      end
 
     if(color_intensity>=BRIGHTNESS_MAX) then
@@ -530,6 +545,55 @@ function checkChronosInput()
       end
     end
     writeFloat(Phantom_param_ptr,color_intensity)
+
+    if(is_rainbow>0) then
+      rainbow_counter = rainbow_counter + 1
+      if(rainbow_counter>255/RAINBOW_STEP) then
+        rainbow_state = (rainbow_state + 1)%6
+        rainbow_counter = 0
+      end
+
+      if(rainbow_state==0) then
+        --rb_red = rb_red
+        rb_green = rb_green + RAINBOW_STEP
+        rb_blue = 0
+      end
+
+      if(rainbow_state==1) then
+        rb_red = rb_red - RAINBOW_STEP
+        --rb_green = rb_green
+        rb_blue = 0
+      end
+
+      if(rainbow_state==2) then
+        rb_red = 0
+        --rb_green = rb_green
+        rb_blue = rb_blue + RAINBOW_STEP
+      end
+
+      if(rainbow_state==3) then
+        --rb_red = 0
+        rb_green = rb_green - RAINBOW_STEP
+        --rb_blue = rb_blue
+      end
+
+      if(rainbow_state==4) then
+        rb_red = rb_red + RAINBOW_STEP
+        rb_green = 0
+        --rb_blue = rb_blue
+      end
+
+      if(rainbow_state==5) then
+        rb_red = 255
+        rb_green = 0
+        rb_blue = rb_blue - RAINBOW_STEP
+      end
+
+
+      writeInteger(Phantom_param_rgb_ptr,rb_red)
+      writeInteger(Phantom_param_rgb_ptr+4,rb_green)
+      writeInteger(Phantom_param_rgb_ptr+8,rb_blue)
+    end
 
   end
 

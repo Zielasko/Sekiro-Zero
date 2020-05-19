@@ -9,6 +9,10 @@ globalalloc(CFG_ENABLE_SLASH_SFX,1)
 CFG_ENABLE_SLASH_SFX:
 db 0x01
 
+globalalloc(CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS,1)
+CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS:
+db 0x01
+
 globalalloc(CFG_IS_CHRONOS_TRIGGER,1)
 CFG_IS_CHRONOS_TRIGGER:
 db 0x00
@@ -102,6 +106,10 @@ dd (float)0.1
 
 globalalloc(MOVEMENT_MULT,32,"sekiro.exe"+AFE65F)
 MOVEMENT_MULT:
+dd (float)1.0
+
+globalalloc(MOVEMENT_DIST_MULT,32,"sekiro.exe"+136B4DB)
+MOVEMENT_DIST_MULT:
 dd (float)1.0
 
 //Phantom color
