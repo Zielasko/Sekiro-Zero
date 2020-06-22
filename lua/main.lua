@@ -116,7 +116,7 @@ if syntaxcheck then return end
   --writeFloat(Buff_ptr+0x10,0.5) -- maxHPRate   0x94 maxhpchangerate
   writeInteger(Buff_ptr+0x0178,48355) --vfx0 (all mibu buffs signs)
   writeInteger(Buff_ptr+0x0198,-1) --vfx1
-  writeInteger(Buff_ptr+0x03C0,-1) -- hksCommand 600=sheate 401=disable combo 590=insane
+  writeInteger(Buff_ptr+0x03C0,-1) -- hksCommand 600=sheathe 401=disable combo 590=insane
 
   writeInteger(SpEffect_Type_ptr,0)
   writeInteger(SpEffect_ID_ptr,3630) --divine confetti
@@ -375,7 +375,7 @@ local slash_state_tbl =
   [SLASH_TRANS_ACTIVE_WAITING] = slash_transition_active_waiting,
   [SLASH_S_WAITING] = slash_state_waiting,--WAITING
   [SLASH_TRANS_WAITING_READY] = slash_transition_waiting_ready,
-  [SLASH_S_EX] = slash_state_exhaustet,--WAITING
+  [SLASH_S_EX] = slash_state_exhaustet,--EX
   [SLASH_TRANS_EX_READY] = slash_transition_exhaustet_ready,
   [SLASH_TRANS_ACTIVE_EX] = slash_transition_active_exhaustet,
   }
