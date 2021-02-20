@@ -139,6 +139,7 @@ PHANTOM_DIFF:
 db 0xff 0xff 0xff 0xff
 
 globalalloc(BULLET_NUM,8,"sekiro.exe"+AF68AA)
+BULLET_NUM:
 dd #5
 
 
@@ -172,12 +173,12 @@ registersymbol(AddEffect)
 
 
 AddEffect:
-mov rcx,[sekiro.exe+3B68E30] //playerBase
+mov rcx,[sekiro.exe+3D7A1E0] //playerBase
 mov rcx,[rcx+88]
 mov rcx,[rcx+11D0]
 mov edx,[Debug_SpEffect_Type]
 sub rsp,28
-call sekiro.exe+BE4290 //40 53 48 83 ec 60 48 8b d9 85 d2 0f 84 c6 00 00 00 83 ea 01 0f 84 b3 00 00 00 83 ea 01
+call sekiro.exe+BFB3B0  //40 53 48 83 ec 60 48 8b d9 85 d2 0f 84 c6 00 00 00 83 ea 01 0f 84 b3 00 00 00 83 ea 01
 add rsp,28
 ret
 

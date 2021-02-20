@@ -54,7 +54,7 @@ if syntaxcheck then return end
 
   is_rainbow = readBytes(getAddress("ENABLE_RAINBOW"),1)
   local rainbow_counter = 0
-  local rainbow_state = 0 -- add green | sub red | add blue | sub green | add red | sub blue 
+  local rainbow_state = 0 -- add green | sub red | add blue | sub green | add red | sub blue
   local rb_red = 255
   local rb_green = 0
   local rb_blue = 0
@@ -99,16 +99,17 @@ if syntaxcheck then return end
   Freeze_bullet_time_ptr = getAddress("FREEZE_BULLET_TIME")
   Bullet_accel_ptr = getAddress("ACCELERATION_MULT")
   Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME") -- 0 off 2 on 1 transition to normal
-  Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
+  -- new Player_speed_ptr = getAddress("[[[[sekiro.exe+3D7A1E0]+88]+1FF8]+28]+D00")
+  Player_speed_ptr = getAddress("[[[[sekiro.exe+3D7A1E0]+88]+1FF8]+28]+D00") -- -> sekiro.exe+3D7A1E0
   Movement_mult_ptr = getAddress("MOVEMENT_MULT")
   Movement_dist_mult_ptr = getAddress("MOVEMENT_DIST_MULT")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
   Phantom_param_rgb_ptr = getAddress("PHANTOM_EDGE_RGB")
   Light_ptr = getAddress("LIGHT_MULTIPLIER")
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
-  SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
+  SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3D7A1E0]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
-  Buff_ptr = getAddress("[[[[sekiro.exe+3B858C0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual
+  Buff_ptr = getAddress("[[[[sekiro.exe+3D978B0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual
 
   -- Setup exhaustion buff
   writeInteger(Buff_ptr,2107)
@@ -255,7 +256,7 @@ function slash_state_ready()
 
   --check if player is attacking
   if(enable_instant_slash_during_chronos>0 or state==S_READY) then
-    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1)))) then --check speed slash [optional] (controller_table==nil) 
+    if((speed_slash_trigger or ((controller_table==nil) and isKeyPressed(1)))) then --check speed slash [optional] (controller_table==nil)
         state_slash = SLASH_TRANS_READY_ACTIVE
      end
 
@@ -294,7 +295,7 @@ function slash_transition_ready_active()
 
   if(not was_SpEffect_successful) then print("could not apply SpEffect") end
   if(not was_Player_Speed_write_successful) then print("could not write to Player speed ptr") end
-  
+
   state_slash = SLASH_S_ACTIVE
 end
 
@@ -453,8 +454,8 @@ end
 
   --main function
 function checkChronosInput()
-      Player_speed_ptr=getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00") -- player speed address can change during loading screens
-      SpEffect_ID_ptr=getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
+      Player_speed_ptr=getAddress("[[[[sekiro.exe+3D7A1E0]+88]+1FF8]+28]+D00") -- player speed address can change during loading screens
+      SpEffect_ID_ptr=getAddress("[[[sekiro.exe+3D7A1E0]+88]+11D0]+24")
 
       if(Player_speed_ptr==0) then --don't write to uninitialized memory during loading screens
         inLoadingScreen = 1

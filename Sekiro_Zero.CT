@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CheatTable CheatEngineTableVersion="31">
+<CheatTable CheatEngineTableVersion="34">
   <CheatEntries>
     <CheatEntry>
       <ID>0</ID>
@@ -22,7 +22,7 @@ openProcess("sekiro.exe")
           <ID>1337105743</ID>
           <Description>"[KATANA ZERO MODE]"</Description>
           <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
-          <LastState Activated="1"/>
+          <LastState/>
           <Color>FF00FF</Color>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>[ENABLE]
@@ -200,12 +200,12 @@ registersymbol(AddEffect)
 
 
 AddEffect:
-mov rcx,[sekiro.exe+3B68E30] //playerBase
+mov rcx,[sekiro.exe+3D7A1E0] //playerBase
 mov rcx,[rcx+88]
 mov rcx,[rcx+11D0]
 mov edx,[Debug_SpEffect_Type]
 sub rsp,28
-call sekiro.exe+BE4290 //40 53 48 83 ec 60 48 8b d9 85 d2 0f 84 c6 00 00 00 83 ea 01 0f 84 b3 00 00 00 83 ea 01
+call sekiro.exe+BFB3B0  //40 53 48 83 ec 60 48 8b d9 85 d2 0f 84 c6 00 00 00 83 ea 01 0f 84 b3 00 00 00 83 ea 01
 add rsp,28
 ret
 
@@ -243,7 +243,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
               <ID>1337106025</ID>
               <Description>"[CONFIG]"</Description>
               <Options moHideChildren="1"/>
-              <LastState Value="" Activated="1" RealAddress="00000000"/>
+              <LastState Value="" RealAddress="00000000"/>
               <GroupHeader>1</GroupHeader>
               <CheatEntries>
                 <CheatEntry>
@@ -654,7 +654,7 @@ unregisterSymbol("FREEZE_BULLET_TIME")
               <ID>1337105846</ID>
               <Description>"[CHRONOS]"</Description>
               <Options moHideChildren="1" moManualExpandCollapse="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-              <LastState Activated="1"/>
+              <LastState/>
               <Color>FFD200</Color>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>[ENABLE]
@@ -758,16 +758,17 @@ if syntaxcheck then return end
   Freeze_bullet_time_ptr = getAddress("FREEZE_BULLET_TIME")
   Bullet_accel_ptr = getAddress("ACCELERATION_MULT")
   Release_bullet_time_ptr = getAddress("RELEASE_BULLET_TIME") -- 0 off 2 on 1 transition to normal
-  Player_speed_ptr = getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00")
+  -- new Player_speed_ptr = getAddress("[[[[sekiro.exe+3D7A1E0]+88]+1FF8]+28]+D00")
+  Player_speed_ptr = getAddress("[[[[sekiro.exe+3D7A1E0]+88]+1FF8]+28]+D00") -- -&gt; sekiro.exe+3D7A1E0
   Movement_mult_ptr = getAddress("MOVEMENT_MULT")
   Movement_dist_mult_ptr = getAddress("MOVEMENT_DIST_MULT")
   Phantom_param_ptr = getAddress("PHANTOM_COLOR_OPACITY")
   Phantom_param_rgb_ptr = getAddress("PHANTOM_EDGE_RGB")
   Light_ptr = getAddress("LIGHT_MULTIPLIER")
   SpEffect_Type_ptr = getAddress("Debug_SpEffect_Type")
-  SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
+  SpEffect_ID_ptr = getAddress("[[[sekiro.exe+3D7A1E0]+88]+11D0]+24")
   Light_ptr = Light_ptr + 0x8
-  Buff_ptr = getAddress("[[[[sekiro.exe+3B858C0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual
+  Buff_ptr = getAddress("[[[[sekiro.exe+3D978B0]+4B0]+70]+70]+071090") -- ID: 3630 white mibu buff visual
 
   -- Setup exhaustion buff
   writeInteger(Buff_ptr,2107)
@@ -775,7 +776,7 @@ if syntaxcheck then return end
   --writeFloat(Buff_ptr+0x10,0.5) -- maxHPRate   0x94 maxhpchangerate
   writeInteger(Buff_ptr+0x0178,48355) --vfx0 (all mibu buffs signs)
   writeInteger(Buff_ptr+0x0198,-1) --vfx1
-  writeInteger(Buff_ptr+0x03C0,-1) -- hksCommand 600=sheate 401=disable combo 590=insane
+  writeInteger(Buff_ptr+0x03C0,-1) -- hksCommand 600=sheathe 401=disable combo 590=insane
 
   writeInteger(SpEffect_Type_ptr,0)
   writeInteger(SpEffect_ID_ptr,3630) --divine confetti
@@ -1034,7 +1035,7 @@ local slash_state_tbl =
   [SLASH_TRANS_ACTIVE_WAITING] = slash_transition_active_waiting,
   [SLASH_S_WAITING] = slash_state_waiting,--WAITING
   [SLASH_TRANS_WAITING_READY] = slash_transition_waiting_ready,
-  [SLASH_S_EX] = slash_state_exhaustet,--WAITING
+  [SLASH_S_EX] = slash_state_exhaustet,--EX
   [SLASH_TRANS_EX_READY] = slash_transition_exhaustet_ready,
   [SLASH_TRANS_ACTIVE_EX] = slash_transition_active_exhaustet,
   }
@@ -1112,8 +1113,8 @@ end
 
   --main function
 function checkChronosInput()
-      Player_speed_ptr=getAddress("[[[[sekiro.exe+3B68E30]+88]+1FF8]+28]+D00") -- player speed address can change during loading screens
-      SpEffect_ID_ptr=getAddress("[[[sekiro.exe+3B68E30]+88]+11D0]+24")
+      Player_speed_ptr=getAddress("[[[[sekiro.exe+3D7A1E0]+88]+1FF8]+28]+D00") -- player speed address can change during loading screens
+      SpEffect_ID_ptr=getAddress("[[[sekiro.exe+3D7A1E0]+88]+11D0]+24")
 
       if(Player_speed_ptr==0) then --don't write to uninitialized memory during loading screens
         inLoadingScreen = 1
@@ -1294,13 +1295,13 @@ if syntaxcheck then return end
   World Speed Multiplier
 }
 
-define(address,"sekiro.exe"+B2F2FF)
+define(address,"sekiro.exe"+B4550F)
 define(bytes,F3 0F 59 83 60 09 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+B2F2FF)
+alloc(newmem,$1000,"sekiro.exe"+B4550F)
 
 label(code)
 label(return)
@@ -1344,13 +1345,13 @@ dealloc(newmem)
   coords in xmm6
 }
 
-define(address,"sekiro.exe"+BADBCA)
+define(address,sekiro.exe+BC467A)
 define(bytes,F3 0F 10 86 0C 09 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+BADBCA)
+alloc(newmem,$1000,sekiro.exe+BC467A)
 
 label(code)
 label(return)
@@ -1394,6 +1395,7 @@ dealloc(newmem)
                 <CheatEntry>
                   <ID>1337105746</ID>
                   <Description>"movement speed mult (counteracts non gravity movement slowdown)"</Description>
+                  <Options moHideChildren="1"/>
                   <LastState Activated="1"/>
                   <Color>FFFF00</Color>
                   <VariableType>Auto Assembler Script</VariableType>
@@ -1405,13 +1407,13 @@ dealloc(newmem)
   movement multiplier
 }
 
-define(address,"sekiro.exe"+136B4DB)
+define(address,sekiro.exe+13B509B)
 define(bytes,F3 0F 10 92 C0 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+136B4DB)
+alloc(newmem,$1000,sekiro.exe+13B509B)
 
 label(code)
 label(return)
@@ -1457,13 +1459,13 @@ dealloc(newmem)
   Phantom color is only used for IDs greater 0
 }
 
-define(getPhantomID,"sekiro.exe"+1087891)
+define(getPhantomID,sekiro.exe+10CCFC1)
 define(bytes,41 8B 40 04 89 04 24)
 
 [ENABLE]
 
 assert(getPhantomID,bytes)
-alloc(newmem,$1000,"sekiro.exe"+1087891)
+alloc(newmem,$1000,sekiro.exe+10CCFC1)
 
 label(code)
 label(return)
@@ -1524,7 +1526,7 @@ dealloc(newmem)
   Phantom Edge color Alpha replace
 }
 
-define(address,"sekiro.exe"+108230F)
+define(address,sekiro.exe+10C763F)//"sekiro.exe"+108230F)
 define(bytes,F3 41 0F 10 00)
 
 [ENABLE]
@@ -1574,13 +1576,13 @@ dealloc(newmem)
                       <LastState Activated="1"/>
                       <Color>46A3FF</Color>
                       <VariableType>Auto Assembler Script</VariableType>
-                      <AssemblerScript>define(address,"sekiro.exe"+108242F)
+                      <AssemblerScript>define(address,sekiro.exe+10C775F) //"sekiro.exe"+108242F
 define(bytes,F3 41 0F 10 40 10)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+108242F)
+alloc(newmem,$1000,sekiro.exe+10C775F)
 
 
 label(code)
@@ -1630,13 +1632,13 @@ dealloc(newmem)
                           <LastState Activated="1"/>
                           <Color>0000FF</Color>
                           <VariableType>Auto Assembler Script</VariableType>
-                          <AssemblerScript>define(address,"sekiro.exe"+10822CD)
+                          <AssemblerScript>define(address,sekiro.exe+10C75FD) //"sekiro.exe"+10822CD)
 define(bytes,41 0F B6 40 14)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+10822CD)
+alloc(newmem,$1000,sekiro.exe+10C75FD)
 
 
 label(code)
@@ -1676,13 +1678,13 @@ dealloc(newmem)
                           <LastState Activated="1"/>
                           <Color>00FF00</Color>
                           <VariableType>Auto Assembler Script</VariableType>
-                          <AssemblerScript>define(address,"sekiro.exe"+10822DE)
+                          <AssemblerScript>define(address,sekiro.exe+10C760E)
 define(bytes,41 0F B6 40 15)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+10822DE)
+alloc(newmem,$1000,sekiro.exe+10C760E)
 
 label(code)
 label(return)
@@ -1721,13 +1723,13 @@ dealloc(newmem)
                           <LastState Activated="1"/>
                           <Color>FF0000</Color>
                           <VariableType>Auto Assembler Script</VariableType>
-                          <AssemblerScript>define(address,"sekiro.exe"+10822F3)
+                          <AssemblerScript>define(address,sekiro.exe+10C7623)
 define(bytes,41 0F B6 40 16)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+10822F3)
+alloc(newmem,$1000,sekiro.exe+10C7623)
 
 
 label(code)
@@ -1794,7 +1796,7 @@ dealloc(newmem)
                               <LastState Activated="1"/>
                               <Color>0000FF</Color>
                               <VariableType>Auto Assembler Script</VariableType>
-                              <AssemblerScript>define(address,"sekiro.exe"+108223D)
+                              <AssemblerScript>define(address,sekiro.exe+10C756D)
 define(bytes,41 0F B6 40 1A)
 
 [ENABLE]
@@ -1840,7 +1842,7 @@ dealloc(newmem)
                               <LastState Activated="1"/>
                               <Color>00FF00</Color>
                               <VariableType>Auto Assembler Script</VariableType>
-                              <AssemblerScript>define(address,"sekiro.exe"+108224E)
+                              <AssemblerScript>define(address,sekiro.exe+10C757E)
 define(bytes,41 0F B6 40 1B)
 
 [ENABLE]
@@ -1885,7 +1887,7 @@ dealloc(newmem)
                               <LastState Activated="1"/>
                               <Color>FF0000</Color>
                               <VariableType>Auto Assembler Script</VariableType>
-                              <AssemblerScript>define(address,"sekiro.exe"+1082263)
+                              <AssemblerScript>define(address,sekiro.exe+10C7593)
 define(bytes,41 0F B6 40 1C)
 
 [ENABLE]
@@ -1938,15 +1940,23 @@ dealloc(newmem)
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
   Global Light Brightness
+
+  49 8b 8f 70 04 00 00
+  e8 f0 36 fb ff
+  0f 28 05 f9 12 eb 02
+
+  49 ?? ?? ?? ?? ?? ??
+  e8 ?? ?? ?? ??
+  0f 28 ?? ?? ?? ?? ??
 }
 
-define(address,"sekiro.exe"+2487C0)
-define(bytes,0F 28 05 29 24 EB 02)
+define(address,sekiro.exe+23D810)
+define(bytes,0F 28 05 79 D6 04 03 48 8D 55 F4 48 8B 8D F8 00 00 00 48 8D 45 F4 )
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+2487C0)
+alloc(newmem,$1000,sekiro.exe+23D810)
 
 
 label(code)
@@ -2002,13 +2012,13 @@ dealloc(newmem)
   max bullet speed
 }
 
-define(address,"sekiro.exe"+AFE947)
+define(address,"sekiro.exe"+B149A7)
 define(bytes,F3 0F 10 40 34)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFE947)
+alloc(newmem,$1000,"sekiro.exe"+B149A7)
 
 
 label(code)
@@ -2052,13 +2062,13 @@ dealloc(newmem)
   Freeze Bullet timer
 }
 
-define(address,"sekiro.exe"+AFD931)
+define(address,"sekiro.exe"+B13991)
 define(bytes,F3 0F 5C C7 F3 0F 11 87 64 0B 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFD931)
+alloc(newmem,$1000,"sekiro.exe"+B13991)
 
 label(code)
 label(return)
@@ -2100,22 +2110,22 @@ dealloc(newmem)
                   <ID>1337106156</ID>
                   <Description>"[Bullet]"</Description>
                   <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                  <LastState Value="" Activated="1" RealAddress="00000000"/>
+                  <LastState Value="" RealAddress="00000000"/>
                   <Color>00CA00</Color>
                   <GroupHeader>1</GroupHeader>
                   <CheatEntries>
                     <CheatEntry>
-                      <ID>1337106023</ID>
+                      <ID>1337107439</ID>
                       <Description>"Disable out of range gravity"</Description>
                       <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
-                      <AssemblerScript>define(address,"sekiro.exe"+AFE681)
+                      <AssemblerScript>define(address,"sekiro.exe"+B146E1)
 define(bytes,F3 44 0F 10 40 20)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFE681)
+alloc(newmem,$1000,"sekiro.exe"+B146E1)
 
 label(code)
 label(return)
@@ -2141,17 +2151,17 @@ dealloc(newmem)
 </AssemblerScript>
                     </CheatEntry>
                     <CheatEntry>
-                      <ID>1337106024</ID>
+                      <ID>1337107440</ID>
                       <Description>"Disable in range gravity"</Description>
                       <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
-                      <AssemblerScript>define(address,"sekiro.exe"+AFE64E)
+                      <AssemblerScript>define(address,"sekiro.exe"+B146AE)
 define(bytes,F3 44 0F 10 40 1C)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFE64E)
+alloc(newmem,$1000,"sekiro.exe"+B146AE)
 
 label(code)
 label(return)
@@ -2177,7 +2187,7 @@ dealloc(newmem)
 </AssemblerScript>
                     </CheatEntry>
                     <CheatEntry>
-                      <ID>1337106090</ID>
+                      <ID>1337107441</ID>
                       <Description>"Bullet acceleration in Range"</Description>
                       <Options moHideChildren="1"/>
                       <LastState Activated="1"/>
@@ -2186,13 +2196,13 @@ dealloc(newmem)
   Bullet acceleration in Range
 }
 
-define(address,"sekiro.exe"+AFE65F)
+define(address,"sekiro.exe"+B146BF)
 define(bytes,F3 44 0F 10 48 2C)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFE65F)
+alloc(newmem,$1000,"sekiro.exe"+B146BF)
 
 label(code)
 label(return)
@@ -2225,13 +2235,13 @@ dealloc(newmem)
 </AssemblerScript>
                       <CheatEntries>
                         <CheatEntry>
-                          <ID>1337106091</ID>
+                          <ID>1337107442</ID>
                           <Description>"RELEASE_BULLET_TIME"</Description>
                           <VariableType>Byte</VariableType>
                           <Address>RELEASE_BULLET_TIME</Address>
                         </CheatEntry>
                         <CheatEntry>
-                          <ID>1337106092</ID>
+                          <ID>1337107443</ID>
                           <Description>"ACCELERATION_MULT"</Description>
                           <VariableType>Float</VariableType>
                           <Address>ACCELERATION_MULT</Address>
@@ -2239,7 +2249,7 @@ dealloc(newmem)
                       </CheatEntries>
                     </CheatEntry>
                     <CheatEntry>
-                      <ID>1337106089</ID>
+                      <ID>1337107444</ID>
                       <Description>"Bullet acceleration out of range"</Description>
                       <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
@@ -2247,13 +2257,13 @@ dealloc(newmem)
   Bullet acceleration out of range
 }
 
-define(address,"sekiro.exe"+AFE692)
+define(address,"sekiro.exe"+B146F2)
 define(bytes,F3 44 0F 10 48 30)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFE692)
+alloc(newmem,$1000,"sekiro.exe"+B146F2)
 
 label(code)
 label(return)
@@ -2286,7 +2296,7 @@ dealloc(newmem)
 </AssemblerScript>
                     </CheatEntry>
                     <CheatEntry>
-                      <ID>1337106088</ID>
+                      <ID>1337107445</ID>
                       <Description>"Bullet min velocity"</Description>
                       <Options moHideChildren="1"/>
                       <LastState Activated="1"/>
@@ -2295,13 +2305,13 @@ dealloc(newmem)
   Bullet min velocity
 }
 
-define(address,"sekiro.exe"+AFE962)
+define(address,"sekiro.exe"+B149C2)
 define(bytes,F3 0F 10 78 38)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFE962)
+alloc(newmem,$1000,"sekiro.exe"+B149C2)
 
 label(code)
 label(return)
@@ -2338,7 +2348,7 @@ dealloc(newmem)
 </AssemblerScript>
                       <CheatEntries>
                         <CheatEntry>
-                          <ID>1337106155</ID>
+                          <ID>1337107446</ID>
                           <Description>"ALMOST_ZERO"</Description>
                           <VariableType>Float</VariableType>
                           <Address>ALMOST_ZERO</Address>
@@ -2376,7 +2386,7 @@ dealloc(newmem)
                       <Description>"DebugPlaySpeed"</Description>
                       <Color>FF0000</Color>
                       <VariableType>Float</VariableType>
-                      <Address>sekiro.exe+3B68E30</Address>
+                      <Address>sekiro.exe+3D7A1E0</Address>
                       <Offsets>
                         <Offset>+D00</Offset>
                         <Offset>+28</Offset>
@@ -2385,13 +2395,6 @@ dealloc(newmem)
                       </Offsets>
                     </CheatEntry>
                   </CheatEntries>
-                </CheatEntry>
-                <CheatEntry>
-                  <ID>1337105988</ID>
-                  <Description>"DEBUG_SPEFFECT_ID"</Description>
-                  <Color>C0C0C0</Color>
-                  <VariableType>4 Bytes</VariableType>
-                  <Address>DEBUG_SPEFFECT_ID</Address>
                 </CheatEntry>
                 <CheatEntry>
                   <ID>1337106346</ID>
@@ -2471,97 +2474,6 @@ dealloc(newmem)
                   <Address>Debug_SpEffect_Type</Address>
                 </CheatEntry>
                 <CheatEntry>
-                  <ID>1337106355</ID>
-                  <Description>"SpEffectID  (108900 - beh state)"</Description>
-                  <DropDownList DisplayValueAsItem="1">25:snow head
-33:curse no menu
-35:no attacks
-45:curse no menu
-131:completely invisible
-236:reduce hp
-3000:heal
-3020:heal2
-3021:heal3
-3040:heal more
-3046:heal symbol
-3050:demon symbol
-3051:demon red eyes
-3060:heal big +
-3063:stamina symbol
-3065:heal + stamina
-3070:stamina
-3075:stamina
-3210:fire sign small
-3213:fire sign
-3220:terror sign
-3223:terror sign
-3230:gold sign
-3240:white sign
-3290:death
-3295:death
-3300:green sign
-3302:green buff
-3311:fire sign
-3312:fire buff
-3350:aggressive red buff
-3360:red black buff sign
-3361:red black buff
-3400:damage sign
-3410:damage half sign
-3411:damage half
-3420:blue sign
-3430:stamina sign
-3440:stealth sign
-3450:divine confetti sign
-3451:divine confetti buff
-3600:white mibu buff
-3610:pink mibu buff
-3620:green mibu buff
-3630:white mibu buff
-3640:all mibu buffs
-3700:100:coins
-3708:1000:coins
-3730:burden dispelled
-3735:burden dispelled
-3800:spirit emblem flying
-4001:poison buildup
-4011:fire buildup + dmg
-4012:fire buildup
-7101:hp buff
-7112:hp buff ++
-9000:poison
-9100:fire
-9300:terror
-9400:shock
-9800:flame explosion sfx
-10400:invisible
-10500:dripping infront of you
-10600:fire effect +
-10605:death
-10608:dummy
-108800:bell sound
-108900:sheath sword
-109004:execute Marker
-3135000:headless black dust
-3135010:invisible
-3135500:headlessbuff
-3145001:small flame left
-3145002:small flame right
-3155000:fireball inside
-3500000:invisible
-3501001:execute marker below
-3501020:poise buff
-</DropDownList>
-                  <Color>C0C0C0</Color>
-                  <VariableType>4 Bytes</VariableType>
-                  <Address>sekiro.exe+3B68E30</Address>
-                  <Offsets>
-                    <Offset>24</Offset>
-                    <Offset>11D0</Offset>
-                    <Offset>88</Offset>
-                  </Offsets>
-                </CheatEntry>
-                <CheatEntry>
                   <ID>1337106094</ID>
                   <Description>"ZERO"</Description>
                   <Color>C0C0C0</Color>
@@ -2583,12 +2495,12 @@ dealloc(newmem)
           <ID>1337106033</ID>
           <Description>"[OPTIONAL]"</Description>
           <Options moHideChildren="1"/>
-          <LastState Value="" Activated="1" RealAddress="00000000"/>
+          <LastState Value="" RealAddress="00000000"/>
           <GroupHeader>1</GroupHeader>
           <CheatEntries>
             <CheatEntry>
               <ID>1337106356</ID>
-              <Description>"[ x Shot damage]"</Description>
+              <Description>"[ x Shot damage] BROKEN"</Description>
               <LastState/>
               <Color>8000FF</Color>
               <VariableType>Auto Assembler Script</VariableType>
@@ -2596,13 +2508,13 @@ dealloc(newmem)
   reduces player and enemy resistance to shot damage
 }
 
-define(address,"sekiro.exe"+1088F38)
+define(address,sekiro.exe+10CE668)
 define(bytes,F3 0F 10 80 98 03 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+1088F38)
+alloc(newmem,$1000,sekiro.exe+10CE668)
 globalalloc(DMGCUTRATE_REPLACE,32,address)
 
 label(code)
@@ -2633,7 +2545,7 @@ dealloc(newmem)
             </CheatEntry>
             <CheatEntry>
               <ID>1337106357</ID>
-              <Description>"[ x Slash damage]"</Description>
+              <Description>"[ x Slash damage] BROKEN"</Description>
               <LastState/>
               <Color>8000FF</Color>
               <VariableType>Auto Assembler Script</VariableType>
@@ -2641,13 +2553,13 @@ dealloc(newmem)
   reduces player and enemy resistance to slashing damage (most common damage type)
 }
 
-define(address,"sekiro.exe"+1088EA4)
+define(address,sekiro.exe+10C6FD9)
 define(bytes,F3 0F 10 40 1C)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+1088EA4)
+alloc(newmem,$1000,sekiro.exe+10C6FD9)
 globalalloc(SLASHCUTRATE_REPLACE,32,address)
 
 label(code)
@@ -2677,7 +2589,7 @@ dealloc(newmem)
             </CheatEntry>
             <CheatEntry>
               <ID>1337106382</ID>
-              <Description>"OneHit non Boss chars"</Description>
+              <Description>"[OneHit non Boss chars] BROKEN"</Description>
               <Options moHideChildren="1"/>
               <LastState/>
               <Color>FF00FF</Color>
@@ -2690,13 +2602,13 @@ dealloc(newmem)
   npc health 1
 }
 
-define(address,"sekiro.exe"+BC0052)
+define(address,sekiro.exe+BD6B02)
 define(bytes,8B 40 20 EB 03)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+BC0052)
+alloc(newmem,$1000,sekiro.exe+BD6B02)
 globalalloc(BOSS_MULT,8,address)
 
 label(code)
@@ -2787,98 +2699,30 @@ dealloc(newmem)
               </CheatEntries>
             </CheatEntry>
             <CheatEntry>
-              <ID>1337106358</ID>
-              <Description>"Erratic SFX"</Description>
-              <Options moHideChildren="1"/>
-              <LastState/>
-              <VariableType>Auto Assembler Script</VariableType>
-              <AssemblerScript>{
-  Changes how certain buff and fog sfx is rendered
-  This makes divine confetti look cooler
-}
-
-define(address,"sekiro.exe"+443644)
-define(bytes,66 44 0F 6F 3D B3 69 CB 02)
-
-[ENABLE]
-
-assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+443644)
-globalalloc(light_matrix3,$64,address)
-
-label(code)
-label(return)
-
-light_matrix3:
-dd #5
-
-light_matrix3+4:
-dd #8
-
-light_matrix3+8:
-dd #16
-
-light_matrix3+c:
-dd #24
-
-newmem:
-
-code:
-  movdqa xmm15,[light_matrix3]
-  jmp return
-
-address:
-  jmp newmem
-  nop 4
-return:
-
-[DISABLE]
-
-address:
-  db bytes
-
-dealloc(newmem)
-</AssemblerScript>
-              <CheatEntries>
-                <CheatEntry>
-                  <ID>1337106359</ID>
-                  <Description>"blue/purple balance"</Description>
-                  <DropDownList DisplayValueAsItem="1">0:DEFAULT
-5:ENABLED
-</DropDownList>
-                  <VariableType>Binary</VariableType>
-                  <BitStart>0</BitStart>
-                  <BitLength>8</BitLength>
-                  <ShowAsBinary>0</ShowAsBinary>
-                  <Address>light_matrix3</Address>
-                </CheatEntry>
-              </CheatEntries>
-            </CheatEntry>
-            <CheatEntry>
               <ID>1337106364</ID>
               <Description>"[Multiply all Bullets]"</Description>
               <Options moHideChildren="1"/>
-              <LastState Value="" Activated="1" RealAddress="00000000"/>
+              <LastState Value="" RealAddress="00000000"/>
               <GroupHeader>1</GroupHeader>
               <CheatEntries>
                 <CheatEntry>
                   <ID>1337105998</ID>
                   <Description>"[ACTIVATE]"</Description>
                   <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
-                  <LastState/>
+                  <LastState Activated="1"/>
                   <Color>FF0080</Color>
                   <VariableType>Auto Assembler Script</VariableType>
                   <AssemblerScript>{
  bullet num shot
 }
 
-define(address,"sekiro.exe"+AF68AA)
-define(bytes,0F B7 80 80 00 00 00)
+define(address,sekiro.exe+B0C8EA)
+define(bytes,0F B7 80 80 00 00 00 48 83 C4 40)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AF68AA)
+alloc(newmem,$1000,sekiro.exe+B0C8EA)
 
 label(code)
 label(return)
@@ -2909,7 +2753,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337105999</ID>
                       <Description>"angle"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{ Game   : sekiro.exe
   Version: 
@@ -2919,13 +2763,13 @@ dealloc(newmem)
   This script does blah blah blah
 }
 
-define(address,"sekiro.exe"+AF5544)
+define(address,sekiro.exe+B0B584)
 define(bytes,41 0F BF 81 86 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AF5544)
+alloc(newmem,$1000,sekiro.exe+B0B584)
 
 label(code)
 label(return)
@@ -2953,15 +2797,15 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106000</ID>
                       <Description>"angle offset"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
-                      <AssemblerScript>define(address,"sekiro.exe"+AF5550)
+                      <AssemblerScript>define(address,sekiro.exe+B0B590)
 define(bytes,41 0F BF 81 84 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AF5550)
+alloc(newmem,$1000,sekiro.exe+B0B590)
 
 label(code)
 label(return)
@@ -2996,15 +2840,15 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106002</ID>
                       <Description>"increased bullet tracking"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
-                      <AssemblerScript>define(address,"sekiro.exe"+AFB2AF)
+                      <AssemblerScript>define(address,sekiro.exe+B1130F)
 define(bytes,0F BF 81 82 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFB2AF)
+alloc(newmem,$1000,sekiro.exe+B1130F)
 
 label(code)
 label(return)
@@ -3032,7 +2876,7 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106401</ID>
                       <Description>"increased bullet tracking 2"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{ Game   : sekiro.exe
   Version: 
@@ -3042,13 +2886,13 @@ dealloc(newmem)
   This script does blah blah blah
 }
 
-define(address,"sekiro.exe"+AFB6B5)
+define(address,sekiro.exe+B11715)
 define(bytes,0F BF 80 82 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFB6B5)
+alloc(newmem,$1000,address)
 
 label(code)
 label(return)
@@ -3105,19 +2949,19 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106399</ID>
                       <Description>"remove angle limit"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   lock limit angle
 }
 
-define(address,"sekiro.exe"+AF55C4)
+define(address,sekiro.exe+B0B604)
 define(bytes,41 0F B6 81 91 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AF55C4)
+alloc(newmem,$1000,address)
 
 label(code)
 label(return)
@@ -3144,19 +2988,19 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106406</ID>
                       <Description>"remove angle limit 2"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   lock angle limit
 }
 
-define(address,"sekiro.exe"+AF50D3)
+define(address,sekiro.exe+B0B113)
 define(bytes,0F B6 81 91 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AF50D3)
+alloc(newmem,$1000,address)
 
 label(code)
 label(return)
@@ -3165,6 +3009,7 @@ newmem:
 
 code:
   mov eax,#0
+  mov byte ptr [rcx+00000091],al //better to change only temporary, but this saves 2 potential injection points
   jmp return
 
 address:
@@ -3183,19 +3028,19 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106403</ID>
                       <Description>"multiply homing begin dist"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   Homing begin dist
 }
 
-define(address,"sekiro.exe"+AFB2D1)
+define(address,sekiro.exe+B11331)
 define(bytes,F3 0F 10 49 40)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AFB2D1)
+alloc(newmem,$1000,address)
 alloc(homing_dist_offset,32,address)
 
 label(code)
@@ -3256,19 +3101,19 @@ dealloc(newmem)
                     <CheatEntry>
                       <ID>1337106404</ID>
                       <Description>"x angle interval"</Description>
-                      <LastState/>
+                      <LastState Activated="1"/>
                       <VariableType>Auto Assembler Script</VariableType>
                       <AssemblerScript>{
   shoot angle x interval
 }
 
-define(address,"sekiro.exe"+AF558D)
+define(address,sekiro.exe+B0B5CD)
 define(bytes,41 0F BF 81 88 00 00 00)
 
 [ENABLE]
 
 assert(address,bytes)
-alloc(newmem,$1000,"sekiro.exe"+AF558D)
+alloc(newmem,$1000,address)
 globalalloc(even_bullet,4,address)
 
 label(code)
@@ -3317,31 +3162,2409 @@ dealloc(newmem)
               </CheatEntries>
             </CheatEntry>
             <CheatEntry>
-              <ID>1337106385</ID>
-              <Description>"-- Cheats --"</Description>
-              <LastState Value="" RealAddress="00000000"/>
-              <Color>A60000</Color>
-              <GroupHeader>1</GroupHeader>
+              <ID>1337106549</ID>
+              <Description>"GParam Editor"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <LastState/>
+              <Color>8000FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : sekiro.exe
+  Version: 
+  Date   : 2020-05-29 10.28 updated
+  Author : JZ
+
+  HSVC gparam
+}
+
+define(address,sekiro.exe+2A69E6)
+define(bytes,0F 10 48 60 0F 11 49 60)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,sekiro.exe+2A69E6)
+globalalloc(GParam_HSCV,8,address)
+globalalloc(GParam_MATRIX,32,address)
+globalalloc(GParam_REPLACE_ENABLE,4,address)
+globalalloc(GParam_REPLACE,128,address)
+
+GParam_HSCV:
+db 00 00 00 00 00 00 00 00
+
+GParam_MATRIX:
+dd (float)0.0
+
+GParam_MATRIX+4:
+db 00 00 00 00
+
+GParam_MATRIX+8:
+db 00 00 00 00
+
+GParam_MATRIX+c:
+db 00 00 00 00
+
+GParam_REPLACE_ENABLE:
+db 00 00 00 00
+
+GParam_REPLACE:
+dd (float)1.0
+
+GParam_REPLACE+4:
+dd (float)1.0
+
+GParam_REPLACE+8:
+dd (float)1.0
+
+GParam_REPLACE+c:
+dd (float)1.0
+
+GParam_REPLACE+10:
+dd (float)1.0
+
+GParam_REPLACE+14:
+dd (float)1.0
+
+GParam_REPLACE+18:
+dd (float)1.0
+
+GParam_REPLACE+1c:
+dd (float)1.0
+
+GParam_REPLACE+20:
+dd (float)1.0
+
+GParam_REPLACE+24:
+dd (float)1.0
+
+GParam_REPLACE+28:
+dd (float)1.0
+
+GParam_REPLACE+2c:
+dd (float)1.0
+
+GParam_REPLACE+60:
+dd (float)120.0
+
+GParam_REPLACE+64:
+dd (float)1.0
+
+GParam_REPLACE+68:
+dd (float)1.0
+
+GParam_REPLACE+6c:
+dd (float)1.0
+
+GParam_REPLACE+70:
+dd (float)120.0
+
+GParam_REPLACE+74:
+dd (float)1.0
+
+GParam_REPLACE+78:
+dd (float)1.0
+
+GParam_REPLACE+7c:
+dd (float)1.0
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  movups xmm1,[rax+60]
+  cmp [GParam_REPLACE_ENABLE],0
+  je skip_replace_gparam
+  movups xmm1,[GParam_REPLACE+60]
+  movups [rcx+60],xmm1
+  movups xmm1,[GParam_REPLACE+70]
+  movups [rcx+70],xmm1
+skip_replace_gparam:
+  addps xmm1,[GParam_MATRIX]
+  movups [rax+60],xmm1
+  mov [GParam_HSCV],rdx
+  movups [rcx+60],xmm1
+  jmp return
+
+address:
+  jmp newmem
+  nop 3
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // movups xmm1,[rax+60]
+  // movups [rcx+60],xmm1
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "sekiro.exe"+2A4F66
+
+"sekiro.exe"+2A4F3E: 0F 10 40 10              -  movups xmm0,[rax+10]
+"sekiro.exe"+2A4F42: 0F 11 41 10              -  movups [rcx+10],xmm0
+"sekiro.exe"+2A4F46: 0F 10 48 20              -  movups xmm1,[rax+20]
+"sekiro.exe"+2A4F4A: 0F 11 49 20              -  movups [rcx+20],xmm1
+"sekiro.exe"+2A4F4E: 0F 10 40 30              -  movups xmm0,[rax+30]
+"sekiro.exe"+2A4F52: 0F 11 41 30              -  movups [rcx+30],xmm0
+"sekiro.exe"+2A4F56: 0F 10 48 40              -  movups xmm1,[rax+40]
+"sekiro.exe"+2A4F5A: 0F 11 49 40              -  movups [rcx+40],xmm1
+"sekiro.exe"+2A4F5E: 0F 10 40 50              -  movups xmm0,[rax+50]
+"sekiro.exe"+2A4F62: 0F 11 41 50              -  movups [rcx+50],xmm0
+// ---------- INJECTING HERE ----------
+"sekiro.exe"+2A4F66: 0F 10 48 60              -  movups xmm1,[rax+60]
+"sekiro.exe"+2A4F6A: 0F 11 49 60              -  movups [rcx+60],xmm1
+// ---------- DONE INJECTING  ----------
+"sekiro.exe"+2A4F6E: 48 8B 40 70              -  mov rax,[rax+70]
+"sekiro.exe"+2A4F72: 48 89 41 70              -  mov [rcx+70],rax
+"sekiro.exe"+2A4F76: 83 BA A4 00 00 00 00     -  cmp dword ptr [rdx+000000A4],00
+"sekiro.exe"+2A4F7D: 0F 8E 10 04 00 00        -  jng sekiro.exe+2A5393
+"sekiro.exe"+2A4F83: 8B 82 F4 00 00 00        -  mov eax,[rdx+000000F4]
+"sekiro.exe"+2A4F89: 41 89 81 8C 00 00 00     -  mov [r9+0000008C],eax
+"sekiro.exe"+2A4F90: C3                       -  ret 
+"sekiro.exe"+2A4F91: F3 0F 10 15 63 3F E5 02  -  movss xmm2,[sekiro.exe+30F8EFC]
+"sekiro.exe"+2A4F99: F3 0F 11 64 24 20        -  movss [rsp+20],xmm4
+"sekiro.exe"+2A4F9F: 0F 28 C2                 -  movaps xmm0,xmm2
+}
+</AssemblerScript>
               <CheatEntries>
                 <CheatEntry>
-                  <ID>1337106361</ID>
-                  <Description>"Player No Revival Item Consume"</Description>
-                  <Color>A60000</Color>
-                  <VariableType>Byte</VariableType>
-                  <Address>143B68F9B</Address>
+                  <ID>1337106550</ID>
+                  <Description>"chromatic ?"</Description>
+                  <Color>0000A8</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>40+80</Offset>
+                  </Offsets>
                 </CheatEntry>
                 <CheatEntry>
-                  <ID>1337106360</ID>
-                  <Description>"Player No Resource Item Consume"</Description>
-                  <Color>A60000</Color>
-                  <VariableType>Byte</VariableType>
-                  <Address>143B68F9A</Address>
+                  <ID>1337106561</ID>
+                  <Description>"chromatic enable"</Description>
+                  <Color>0000A8</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>44+80</Offset>
+                  </Offsets>
                 </CheatEntry>
                 <CheatEntry>
-                  <ID>1337054432</ID>
-                  <Description>"All No Goods Consume"</Description>
-                  <VariableType>Byte</VariableType>
-                  <Address>sekiro.exe+3B68FA9</Address>
+                  <ID>1337106560</ID>
+                  <Description>"Chromatic horizontal"</Description>
+                  <Color>0000A8</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>48+80</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106559</ID>
+                  <Description>"Chromatic vertical"</Description>
+                  <Color>0000A8</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>4c+80</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106558</ID>
+                  <Description>"Hue"</Description>
+                  <Color>FF0080</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>60+80</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106551</ID>
+                  <Description>"Saturation"</Description>
+                  <Color>FF0080</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>64+80</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106552</ID>
+                  <Description>"Value"</Description>
+                  <Color>FF0080</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>68+80</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106553</ID>
+                  <Description>"Contrast"</Description>
+                  <Color>FF0080</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>6C+80</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106554</ID>
+                  <Description>"Hue Add"</Description>
+                  <Color>CE00CE</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_MATRIX</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106555</ID>
+                  <Description>"S"</Description>
+                  <Color>CE00CE</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_MATRIX+4</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106557</ID>
+                  <Description>"GParam_MATRIX V"</Description>
+                  <Color>CE00CE</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_MATRIX+8</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337106556</ID>
+                  <Description>"GParam_MATRIX C"</Description>
+                  <Color>CE00CE</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_MATRIX+c</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107062</ID>
+                  <Description>"Current Gparam"</Description>
+                  <Options moHideChildren="1" moManualExpandCollapse="1" moAllowManualCollapseAndExpand="1"/>
+                  <Color>FF0080</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>80</Offset>
+                  </Offsets>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1337107064</ID>
+                      <Description>"Float_0"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107065</ID>
+                      <Description>"Float_1"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107066</ID>
+                      <Description>"Float_2"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107067</ID>
+                      <Description>"gamma?"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107068</ID>
+                      <Description>"Float_4"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x10</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107069</ID>
+                      <Description>"grey/freeze"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x14</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107070</ID>
+                      <Description>"Float_6"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x18</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107071</ID>
+                      <Description>"Contrast"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x1c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107072</ID>
+                      <Description>"Brightness"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x20</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107073</ID>
+                      <Description>"Float_9"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x24</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107074</ID>
+                      <Description>"Brightness target"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x28</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107075</ID>
+                      <Description>"Float_11"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x2c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107076</ID>
+                      <Description>"Float_12"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x30</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107077</ID>
+                      <Description>"Float_13"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x34</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107078</ID>
+                      <Description>"Float_14"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x38</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107079</ID>
+                      <Description>"Float_15"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x3c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107080</ID>
+                      <Description>"Chroma?"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x40</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107225</ID>
+                      <Description>"Chroma?"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Binary</VariableType>
+                      <BitStart>0</BitStart>
+                      <BitLength>32</BitLength>
+                      <ShowAsBinary>1</ShowAsBinary>
+                      <Address>+ 0x40</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107081</ID>
+                      <Description>"Chromatic Abberation enable"</Description>
+                      <Color>000000</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x44</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107082</ID>
+                      <Description>"chroma horizontal"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x48</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107083</ID>
+                      <Description>"chroma vertical"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x4c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107084</ID>
+                      <Description>"Vignette"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x50</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107085</ID>
+                      <Description>"Softness"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x54</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107086</ID>
+                      <Description>"Shape"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x58</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107087</ID>
+                      <Description>"size"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x5c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107088</ID>
+                      <Description>"Hue"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x60</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107089</ID>
+                      <Description>"Saturation"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x64</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107090</ID>
+                      <Description>"Value"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x68</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107091</ID>
+                      <Description>"Contrast"</Description>
+                      <Color>000000</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x6c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107092</ID>
+                      <Description>"Bloom?"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x70</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107093</ID>
+                      <Description>"Gamma copy"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x74</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107094</ID>
+                      <Description>"Float_30"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x78</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107095</ID>
+                      <Description>"Float_31"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x7c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107096</ID>
+                      <Description>"Float_32"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x80</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107097</ID>
+                      <Description>"Float_33"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x84</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107098</ID>
+                      <Description>"Float_34"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x88</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107099</ID>
+                      <Description>"Float_35"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x8c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107100</ID>
+                      <Description>"Float_36"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x90</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107101</ID>
+                      <Description>"Float_37"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x94</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107102</ID>
+                      <Description>"Float_38"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x98</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107103</ID>
+                      <Description>"Float_39"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x9c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107104</ID>
+                      <Description>"Float_40"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xa0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107105</ID>
+                      <Description>"Float_41"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xa4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107106</ID>
+                      <Description>"Float_42"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xa8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107107</ID>
+                      <Description>"Float_43"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xac</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107108</ID>
+                      <Description>"Float_44"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xb0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107109</ID>
+                      <Description>"Float_45"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xb4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107110</ID>
+                      <Description>"Float_46"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xb8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107111</ID>
+                      <Description>"Float_47"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xbc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107112</ID>
+                      <Description>"Float_48"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107349</ID>
+                      <Description>"Float_48"</Description>
+                      <ShowAsHex>1</ShowAsHex>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xc0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107113</ID>
+                      <Description>"Float_49"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107114</ID>
+                      <Description>"Float_50"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107115</ID>
+                      <Description>"Float_51"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xcc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107116</ID>
+                      <Description>"Float_52"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xd0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107117</ID>
+                      <Description>"Float_53"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xd4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107118</ID>
+                      <Description>"Float_54"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xd8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107119</ID>
+                      <Description>"Float_55"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xdc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107120</ID>
+                      <Description>"Float_56"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xe0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107121</ID>
+                      <Description>"Float_57"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xe4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107122</ID>
+                      <Description>"Float_58"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xe8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107123</ID>
+                      <Description>"Float_59"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xec</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107124</ID>
+                      <Description>"Float_60"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xf0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107125</ID>
+                      <Description>"Float_61"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xf4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107126</ID>
+                      <Description>"Float_62"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xf8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107127</ID>
+                      <Description>"Float_63"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xfc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107128</ID>
+                      <Description>"Float_64"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x100</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107129</ID>
+                      <Description>"Float_65"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x104</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107130</ID>
+                      <Description>"Float_66"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x108</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107131</ID>
+                      <Description>"Float_67"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x10c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107132</ID>
+                      <Description>"Float_68"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x110</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107133</ID>
+                      <Description>"Float_69"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x114</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107134</ID>
+                      <Description>"Float_70"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x118</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107135</ID>
+                      <Description>"Float_71"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x11c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107136</ID>
+                      <Description>"Float_72"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x120</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107137</ID>
+                      <Description>"Float_73"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x124</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107138</ID>
+                      <Description>"Float_74"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x128</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107139</ID>
+                      <Description>"Float_75"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x12c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107140</ID>
+                      <Description>"Float_76"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x130</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107141</ID>
+                      <Description>"Float_77"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x134</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107142</ID>
+                      <Description>"Float_78"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x138</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107143</ID>
+                      <Description>"Float_79"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x13c</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107144</ID>
+                  <Description>"Current Gparam -80"</Description>
+                  <Options moHideChildren="1" moManualExpandCollapse="1" moAllowManualCollapseAndExpand="1"/>
+                  <Color>FF0080</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>GParam_HSCV</Address>
+                  <Offsets>
+                    <Offset>0</Offset>
+                  </Offsets>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1337107145</ID>
+                      <Description>"Float_0"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107146</ID>
+                      <Description>"Float_1"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107147</ID>
+                      <Description>"Float_2"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107148</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107149</ID>
+                      <Description>"Float_4"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x10</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107150</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x14</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107151</ID>
+                      <Description>"Float_6"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x18</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107152</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x1c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107153</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x20</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107154</ID>
+                      <Description>"Float_9"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x24</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107155</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x28</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107156</ID>
+                      <Description>"Float_11"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x2c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107157</ID>
+                      <Description>"Float_12"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x30</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107158</ID>
+                      <Description>"Float_13"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x34</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107159</ID>
+                      <Description>"Float_14"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x38</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107160</ID>
+                      <Description>"Float_15"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x3c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107161</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x40</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107162</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x44</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107163</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x48</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107164</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x4c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107165</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x50</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107166</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x54</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107167</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x58</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107168</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x5c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107169</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x60</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107170</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x64</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107171</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x68</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107172</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x6c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107173</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x70</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107174</ID>
+                      <Description>"???"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x74</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107175</ID>
+                      <Description>"Float_30"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x78</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107176</ID>
+                      <Description>"Float_31"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x7c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107177</ID>
+                      <Description>"Float_32"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x80</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107178</ID>
+                      <Description>"Float_33"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x84</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107179</ID>
+                      <Description>"Float_34"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x88</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107180</ID>
+                      <Description>"Float_35"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x8c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107181</ID>
+                      <Description>"Float_36"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x90</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107182</ID>
+                      <Description>"Float_37"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x94</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107183</ID>
+                      <Description>"Float_38"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x98</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107184</ID>
+                      <Description>"Float_39"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x9c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107185</ID>
+                      <Description>"Float_40"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xa0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107186</ID>
+                      <Description>"Float_41"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xa4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107187</ID>
+                      <Description>"Float_42"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xa8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107188</ID>
+                      <Description>"Float_43"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xac</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107189</ID>
+                      <Description>"Float_44"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xb0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107190</ID>
+                      <Description>"Float_45"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xb4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107191</ID>
+                      <Description>"Float_46"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xb8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107192</ID>
+                      <Description>"Float_47"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xbc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107193</ID>
+                      <Description>"chroma?"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107194</ID>
+                      <Description>"chroma enable"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xc4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107195</ID>
+                      <Description>"chroma horizontal"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xc8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107196</ID>
+                      <Description>"chroma vetical"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xcc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107197</ID>
+                      <Description>"Vignette"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xd0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107198</ID>
+                      <Description>"Softness"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xd4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107199</ID>
+                      <Description>"Shape"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xd8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107200</ID>
+                      <Description>"size"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0xdc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107201</ID>
+                      <Description>"Hue"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xe0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107202</ID>
+                      <Description>"Saturation"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xe4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107203</ID>
+                      <Description>"Value"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xe8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107204</ID>
+                      <Description>"Contrast"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xec</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107205</ID>
+                      <Description>"Float_60"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xf0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107206</ID>
+                      <Description>"Float_61"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xf4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107207</ID>
+                      <Description>"Float_62"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xf8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107208</ID>
+                      <Description>"Float_63"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0xfc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107209</ID>
+                      <Description>"Float_64"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x100</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107210</ID>
+                      <Description>"Float_65"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x104</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107211</ID>
+                      <Description>"Float_66"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x108</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107212</ID>
+                      <Description>"Float_67"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x10c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107213</ID>
+                      <Description>"Float_68"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x110</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107214</ID>
+                      <Description>"Float_69"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x114</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107215</ID>
+                      <Description>"Float_70"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x118</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107216</ID>
+                      <Description>"Float_71"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x11c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107217</ID>
+                      <Description>"Float_72"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x120</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107218</ID>
+                      <Description>"Float_73"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x124</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107219</ID>
+                      <Description>"Float_74"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x128</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107220</ID>
+                      <Description>"Float_75"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x12c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107221</ID>
+                      <Description>"Float_76"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x130</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107222</ID>
+                      <Description>"Float_77"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x134</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107223</ID>
+                      <Description>"Float_78"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>+ 0x138</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107224</ID>
+                      <Description>"Float_79"</Description>
+                      <Color>808080</Color>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>+ 0x13c</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107043</ID>
+                  <Description>"Replace GParam"</Description>
+                  <Options moHideChildren="1" moManualExpandCollapse="1" moAllowManualCollapseAndExpand="1"/>
+                  <Color>CE00CE</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>GParam_REPLACE_ENABLE</Address>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1337107048</ID>
+                      <Description>"GParam_REPLACE_0"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1</ID>
+                      <Description>"GParam_REPLACE_1"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107049</ID>
+                      <Description>"GParam_REPLACE_2"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>3</ID>
+                      <Description>"GParam_REPLACE_3"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107050</ID>
+                      <Description>"GParam_REPLACE_4"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x10</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107051</ID>
+                      <Description>"GParam_REPLACE_5"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x14</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107052</ID>
+                      <Description>"GParam_REPLACE_6"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x18</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107053</ID>
+                      <Description>"GParam_REPLACE_7"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107054</ID>
+                      <Description>"GParam_REPLACE_8"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x20</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107055</ID>
+                      <Description>"GParam_REPLACE_9"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x24</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107056</ID>
+                      <Description>"GParam_REPLACE_10"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x28</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107057</ID>
+                      <Description>"GParam_REPLACE_11"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x2c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107058</ID>
+                      <Description>"GParam_REPLACE_12"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x30</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107059</ID>
+                      <Description>"GParam_REPLACE_13"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x34</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>14</ID>
+                      <Description>"GParam_REPLACE_14"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x38</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>15</ID>
+                      <Description>"GParam_REPLACE_15"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x3c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107060</ID>
+                      <Description>"GParam_REPLACE_16"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x40</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>17</ID>
+                      <Description>"GParam_REPLACE_17"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x44</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>18</ID>
+                      <Description>"GParam_REPLACE_18"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x48</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>19</ID>
+                      <Description>"GParam_REPLACE_19"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x4c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1337107061</ID>
+                      <Description>"GParam_REPLACE_20"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x50</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>21</ID>
+                      <Description>"GParam_REPLACE_21"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x54</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>22</ID>
+                      <Description>"GParam_REPLACE_22"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x58</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>23</ID>
+                      <Description>"???"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x5c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>24</ID>
+                      <Description>"Hue"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x60</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>25</ID>
+                      <Description>"Saturation"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x64</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>26</ID>
+                      <Description>"Value"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x68</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>27</ID>
+                      <Description>"Contrast"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x6c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>28</ID>
+                      <Description>"GParam_REPLACE_28"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x70</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>29</ID>
+                      <Description>"GParam_REPLACE_29"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x74</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>30</ID>
+                      <Description>"GParam_REPLACE_30"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x78</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>31</ID>
+                      <Description>"Contrast"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x7c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>32</ID>
+                      <Description>"GParam_REPLACE_32"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x80</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>33</ID>
+                      <Description>"GParam_REPLACE_33"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x84</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>34</ID>
+                      <Description>"GParam_REPLACE_34"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x88</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>35</ID>
+                      <Description>"GParam_REPLACE_35"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x8c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>36</ID>
+                      <Description>"GParam_REPLACE_36"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x90</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>37</ID>
+                      <Description>"GParam_REPLACE_37"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x94</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>38</ID>
+                      <Description>"GParam_REPLACE_38"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x98</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>39</ID>
+                      <Description>"GParam_REPLACE_39"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x9c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>40</ID>
+                      <Description>"GParam_REPLACE_40"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xa0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>41</ID>
+                      <Description>"GParam_REPLACE_41"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xa4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>42</ID>
+                      <Description>"GParam_REPLACE_42"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xa8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>43</ID>
+                      <Description>"GParam_REPLACE_43"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xac</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>44</ID>
+                      <Description>"GParam_REPLACE_44"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xb0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>45</ID>
+                      <Description>"GParam_REPLACE_45"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xb4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>46</ID>
+                      <Description>"GParam_REPLACE_46"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xb8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>47</ID>
+                      <Description>"GParam_REPLACE_47"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xbc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>48</ID>
+                      <Description>"GParam_REPLACE_48"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xc0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>49</ID>
+                      <Description>"GParam_REPLACE_49"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xc4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>50</ID>
+                      <Description>"GParam_REPLACE_50"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xc8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>51</ID>
+                      <Description>"GParam_REPLACE_51"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xcc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>52</ID>
+                      <Description>"GParam_REPLACE_52"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xd0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>53</ID>
+                      <Description>"GParam_REPLACE_53"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xd4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>54</ID>
+                      <Description>"GParam_REPLACE_54"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xd8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>55</ID>
+                      <Description>"GParam_REPLACE_55"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xdc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>56</ID>
+                      <Description>"GParam_REPLACE_56"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xe0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>57</ID>
+                      <Description>"GParam_REPLACE_57"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xe4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>58</ID>
+                      <Description>"GParam_REPLACE_58"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xe8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>59</ID>
+                      <Description>"GParam_REPLACE_59"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xec</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>60</ID>
+                      <Description>"GParam_REPLACE_60"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xf0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>61</ID>
+                      <Description>"GParam_REPLACE_61"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xf4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>62</ID>
+                      <Description>"GParam_REPLACE_62"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xf8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>63</ID>
+                      <Description>"GParam_REPLACE_63"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0xfc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>64</ID>
+                      <Description>"GParam_REPLACE_64"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x100</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>65</ID>
+                      <Description>"GParam_REPLACE_65"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x104</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>66</ID>
+                      <Description>"GParam_REPLACE_66"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x108</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>67</ID>
+                      <Description>"GParam_REPLACE_67"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x10c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>68</ID>
+                      <Description>"GParam_REPLACE_68"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x110</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>69</ID>
+                      <Description>"GParam_REPLACE_69"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x114</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>70</ID>
+                      <Description>"GParam_REPLACE_70"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x118</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>71</ID>
+                      <Description>"GParam_REPLACE_71"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x11c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>72</ID>
+                      <Description>"GParam_REPLACE_72"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x120</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>73</ID>
+                      <Description>"GParam_REPLACE_73"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x124</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>74</ID>
+                      <Description>"GParam_REPLACE_74"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x128</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>75</ID>
+                      <Description>"GParam_REPLACE_75"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x12c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>76</ID>
+                      <Description>"GParam_REPLACE_76"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x130</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>77</ID>
+                      <Description>"GParam_REPLACE_77"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x134</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>78</ID>
+                      <Description>"GParam_REPLACE_78"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x138</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>79</ID>
+                      <Description>"GParam_REPLACE_79"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x13c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>80</ID>
+                      <Description>"GParam_REPLACE_80"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x140</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>81</ID>
+                      <Description>"GParam_REPLACE_81"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x144</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>82</ID>
+                      <Description>"GParam_REPLACE_82"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x148</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>83</ID>
+                      <Description>"GParam_REPLACE_83"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x14c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>84</ID>
+                      <Description>"GParam_REPLACE_84"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x150</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>85</ID>
+                      <Description>"GParam_REPLACE_85"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x154</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>86</ID>
+                      <Description>"GParam_REPLACE_86"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x158</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>87</ID>
+                      <Description>"GParam_REPLACE_87"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x15c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>88</ID>
+                      <Description>"GParam_REPLACE_88"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x160</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>89</ID>
+                      <Description>"GParam_REPLACE_89"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x164</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>90</ID>
+                      <Description>"GParam_REPLACE_90"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x168</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>91</ID>
+                      <Description>"GParam_REPLACE_91"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x16c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>92</ID>
+                      <Description>"GParam_REPLACE_92"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x170</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>93</ID>
+                      <Description>"GParam_REPLACE_93"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x174</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>94</ID>
+                      <Description>"GParam_REPLACE_94"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x178</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>95</ID>
+                      <Description>"GParam_REPLACE_95"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x17c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>96</ID>
+                      <Description>"GParam_REPLACE_96"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x180</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>97</ID>
+                      <Description>"GParam_REPLACE_97"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x184</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>98</ID>
+                      <Description>"GParam_REPLACE_98"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x188</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>99</ID>
+                      <Description>"GParam_REPLACE_99"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x18c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>100</ID>
+                      <Description>"GParam_REPLACE_100"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x190</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>101</ID>
+                      <Description>"GParam_REPLACE_101"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x194</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>102</ID>
+                      <Description>"GParam_REPLACE_102"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x198</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>103</ID>
+                      <Description>"GParam_REPLACE_103"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x19c</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>104</ID>
+                      <Description>"GParam_REPLACE_104"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1a0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>105</ID>
+                      <Description>"GParam_REPLACE_105"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1a4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>106</ID>
+                      <Description>"GParam_REPLACE_106"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1a8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>107</ID>
+                      <Description>"GParam_REPLACE_107"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1ac</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>108</ID>
+                      <Description>"GParam_REPLACE_108"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1b0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>109</ID>
+                      <Description>"GParam_REPLACE_109"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1b4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>110</ID>
+                      <Description>"GParam_REPLACE_110"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1b8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>111</ID>
+                      <Description>"GParam_REPLACE_111"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1bc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>112</ID>
+                      <Description>"GParam_REPLACE_112"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1c0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>113</ID>
+                      <Description>"GParam_REPLACE_113"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1c4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>114</ID>
+                      <Description>"GParam_REPLACE_114"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1c8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>115</ID>
+                      <Description>"GParam_REPLACE_115"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1cc</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>116</ID>
+                      <Description>"GParam_REPLACE_116"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1d0</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>117</ID>
+                      <Description>"GParam_REPLACE_117"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1d4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>118</ID>
+                      <Description>"GParam_REPLACE_118"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1d8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>119</ID>
+                      <Description>"GParam_REPLACE_119"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>GParam_REPLACE + 0x1dc</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1337107462</ID>
+              <Description>"Color balance"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : sekiro.exe
+  Version: 
+  Date   : 2021-02-20
+  Author : JZ
+
+  Modifies the games color balance
+}
+
+define(address,"sekiro.exe"+24DCB6)
+define(bytes,0F 28 05 93 AC B7 02)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"sekiro.exe"+24DCB6)
+globalalloc(color_balance_m,$64,address)
+
+label(code)
+label(return)
+
+color_balance_m:
+dd (float)3.0
+
+color_balance_m+4:
+dd (float)2.0
+
+color_balance_m+8:
+dd (float)2.0
+
+color_balance_m+c:
+dd (float)0.0
+
+newmem:
+
+code:
+  movaps xmm0,[color_balance_m]
+  jmp return
+
+address:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // movaps xmm0,[sekiro.exe+2DC8950]
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: sekiro.exe+24DCB6
+
+sekiro.exe+24DC9B: CC                          - int 3 
+sekiro.exe+24DC9C: CC                          - int 3 
+sekiro.exe+24DC9D: CC                          - int 3 
+sekiro.exe+24DC9E: CC                          - int 3 
+sekiro.exe+24DC9F: CC                          - int 3 
+sekiro.exe+24DCA0: 48 8B C4                    - mov rax,rsp
+sekiro.exe+24DCA3: 48 89 58 18                 - mov [rax+18],rbx
+sekiro.exe+24DCA7: 55                          - push rbp
+sekiro.exe+24DCA8: 48 8D A8 68 FF FF FF        - lea rbp,[rax-00000098]
+sekiro.exe+24DCAF: 48 81 EC 90 01 00 00        - sub rsp,00000190
+// ---------- INJECTING HERE ----------
+sekiro.exe+24DCB6: 0F 28 05 93 AC B7 02        - movaps xmm0,[sekiro.exe+2DC8950]
+// ---------- DONE INJECTING  ----------
+sekiro.exe+24DCBD: 48 8B DA                    - mov rbx,rdx
+sekiro.exe+24DCC0: 0F 28 15 99 AC B7 02        - movaps xmm2,[sekiro.exe+2DC8960]
+sekiro.exe+24DCC7: 44 0F 29 48 B8              - movaps [rax-48],xmm9
+sekiro.exe+24DCCC: F3 44 0F 10 0D C7 B4 03 03  - movss xmm9,[sekiro.exe+328919C]
+sekiro.exe+24DCD5: 48 89 78 08                 - mov [rax+08],rdi
+sekiro.exe+24DCD9: 48 8B F9                    - mov rdi,rcx
+sekiro.exe+24DCDC: 0F 29 70 E8                 - movaps [rax-18],xmm6
+sekiro.exe+24DCE0: 0F 28 35 89 AC B7 02        - movaps xmm6,[sekiro.exe+2DC8970]
+sekiro.exe+24DCE7: 0F 29 02                    - movaps [rdx],xmm0
+sekiro.exe+24DCEA: 0F 29 78 D8                 - movaps [rax-28],xmm7
+}
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1337107478</ID>
+                  <Description>"color_balance_m"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>color_balance_m</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107479</ID>
+                  <Description>"color_balance_m+4"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>color_balance_m+4</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107480</ID>
+                  <Description>"color_balance_m+8"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>color_balance_m+8</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107481</ID>
+                  <Description>"color_balance_m+c"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>color_balance_m+c</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1337107470</ID>
+              <Description>"Erratic Sfx"</Description>
+              <Options moHideChildren="1"/>
+              <LastState Activated="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : sekiro.exe
+  Version: 
+  Date   : 2021-02-20
+  Author : JZ
+
+  Erratic SFX
+}
+
+define(address,"sekiro.exe"+444F44)
+define(bytes,66 44 0F 6F 3D 53 53 E4 02)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000,"sekiro.exe"+444F44)
+globalalloc(light_matrix_e,$64,address)
+
+label(code)
+label(return)
+
+light_matrix_e:
+dd #5
+
+light_matrix_e+4:
+dd #8
+
+light_matrix_e+8:
+dd #16
+
+light_matrix_e+c:
+dd #24
+
+
+newmem:
+
+code:
+  //movdqa xmm15,[sekiro.exe+328A2A0]
+  movdqa xmm15,[light_matrix_e]
+  jmp return
+
+address:
+  jmp newmem
+  nop 4
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+  // movdqa xmm15,[sekiro.exe+328A2A0]
+
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: sekiro.exe+444F44
+
+sekiro.exe+444F0A: 48 89 44 24 48                    - mov [rsp+48],rax
+sekiro.exe+444F0F: 4C 89 A5 90 03 00 00              - mov [rbp+00000390],r12
+sekiro.exe+444F16: 49 8B CC                          - mov rcx,r12
+sekiro.exe+444F19: E8 02 B8 97 01                    - call sekiro.exe+1DC0720
+sekiro.exe+444F1E: F3 0F 11 85 98 03 00 00           - movss [rbp+00000398],xmm0
+sekiro.exe+444F26: 41 8B 84 24 CC 00 00 00           - mov eax,[r12+000000CC]
+sekiro.exe+444F2E: 89 85 9C 03 00 00                 - mov [rbp+0000039C],eax
+sekiro.exe+444F34: 85 FF                             - test edi,edi
+sekiro.exe+444F36: 0F 84 44 22 00 00                 - je sekiro.exe+447180
+sekiro.exe+444F3C: 44 0F 28 1D 4C 62 E4 02           - movaps xmm11,[sekiro.exe+328B190]
+// ---------- INJECTING HERE ----------
+sekiro.exe+444F44: 66 44 0F 6F 3D 53 53 E4 02        - movdqa xmm15,[sekiro.exe+328A2A0]
+// ---------- DONE INJECTING  ----------
+sekiro.exe+444F4D: 66 44 0F 6F 05 DA 45 E4 02        - movdqa xmm8,[sekiro.exe+3289530]
+sekiro.exe+444F56: 45 0F 57 E4                       - xorps xmm12,xmm12
+sekiro.exe+444F5A: 44 0F 28 0D AE 63 E4 02           - movaps xmm9,[sekiro.exe+328B310]
+sekiro.exe+444F62: 45 33 E4                          - xor r12d,r12d
+sekiro.exe+444F65: 4C 8D 76 10                       - lea r14,[rsi+10]
+sekiro.exe+444F69: 49 83 C5 10                       - add r13,10
+sekiro.exe+444F6D: 48 89 7D B8                       - mov [rbp-48],rdi
+sekiro.exe+444F71: 0F 1F 40 00                       - nop dword ptr [rax+00]
+sekiro.exe+444F75: 66 66 66 0F 1F 84 00 00 00 00 00  - nop word ptr [rax+rax+00000000]
+sekiro.exe+444F80: 4D 8B 7F 20                       - mov r15,[r15+20]
+}
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1337107472</ID>
+                  <Description>"light_matrix_e"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>light_matrix_e</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107473</ID>
+                  <Description>"light_matrix_e+4"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>light_matrix_e+4</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107475</ID>
+                  <Description>"light_matrix_e+8"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>light_matrix_e+8</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337107474</ID>
+                  <Description>"light_matrix_e+c"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>light_matrix_e+c</Address>
                 </CheatEntry>
               </CheatEntries>
             </CheatEntry>
@@ -3358,6 +5581,7 @@ dealloc(newmem)
       <AssemblerScript>{$lua}
 if syntaxcheck then return end
 info_message = "[Sekiro ZERO]\n"
+info_message = info_message .. "Game Ver. 1.06\n\n"
 info_message = info_message .. "This mod lets you experience Sekiro with the chronos game mechanic from Katana ZERO\n"
 info_message = info_message .. "\nSteps to activate the mod:\n\n"
 info_message = info_message .. "- Start Sekiro and load your player character\n"
@@ -3386,55 +5610,55 @@ showInfoMessage()
   <UserdefinedSymbols>
     <SymbolEntry>
       <Name>CFG_ENABLE_INSTANT_SLASH</Name>
-      <Address>00700000</Address>
+      <Address>0A050000</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_SLASH_SFX</Name>
-      <Address>00700010</Address>
+      <Address>0A050010</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_TIMER_INTERVAL</Name>
-      <Address>00700040</Address>
+      <Address>0A050040</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MULT</Name>
-      <Address>00700050</Address>
+      <Address>0A050050</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_WITHDRAWL_MULT</Name>
-      <Address>00700060</Address>
+      <Address>0A050060</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_KEYBOARD_KEY</Name>
-      <Address>00700070</Address>
+      <Address>0A050070</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_CONTROLLER_BUTTON</Name>
-      <Address>00700080</Address>
+      <Address>0A050080</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_BRIGHTNESS_MAX</Name>
-      <Address>00700090</Address>
+      <Address>0A050090</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>GAMESPEED</Name>
-      <Address>00700100</Address>
+      <Address>0A050100</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MAX_BULLET_SPEED_MULT</Name>
-      <Address>00700140</Address>
+      <Address>0A050140</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>FREEZE_BULLET_TIME</Name>
-      <Address>007001A0</Address>
+      <Address>0A0501A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_COLOR_OPACITY</Name>
-      <Address>00700240</Address>
+      <Address>0A050240</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_LIGHT_OPACITY</Name>
-      <Address>00700260</Address>
+      <Address>0A050260</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RED_W</Name>
@@ -3450,95 +5674,95 @@ showInfoMessage()
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_DIFF</Name>
-      <Address>007002A0</Address>
+      <Address>0A0502A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>LIGHT_MULTIPLIER</Name>
-      <Address>007002C0</Address>
+      <Address>0A0502C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>Debug_SpEffect_Type</Name>
-      <Address>00700300</Address>
+      <Address>0A050300</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>light_matrix3</Name>
-      <Address>00670360</Address>
+      <Address>00860360</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_MAX</Name>
-      <Address>007000B0</Address>
+      <Address>0A0500B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_USE_MOVEMENT_MULT</Name>
-      <Address>007000D0</Address>
+      <Address>0A0500D0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_PLAYER_MOVE</Name>
-      <Address>007000E0</Address>
+      <Address>0A0500E0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ACCELERATION_MULT</Name>
-      <Address>00700160</Address>
+      <Address>0A050160</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ACCELERATION_ADD</Name>
-      <Address>00700180</Address>
+      <Address>0A050180</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>RELEASE_BULLET_TIME</Name>
-      <Address>007001B0</Address>
+      <Address>0A0501B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ZERO</Name>
-      <Address>007001C0</Address>
+      <Address>0A0501C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ALMOST_ZERO</Name>
-      <Address>007001E0</Address>
+      <Address>0A0501E0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>MOVEMENT_MULT</Name>
-      <Address>00700200</Address>
+      <Address>0A050200</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>DMGCUTRATE_REPLACE</Name>
-      <Address>00670310</Address>
+      <Address>02610310</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>SLASHCUTRATE_REPLACE</Name>
-      <Address>00670330</Address>
+      <Address>02610330</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_SLOW_MIN</Name>
-      <Address>007000A0</Address>
+      <Address>0A0500A0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_CHRONOS_LIGHT_MIN</Name>
-      <Address>007000C0</Address>
+      <Address>0A0500C0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>BOSS_MULT</Name>
-      <Address>00670350</Address>
+      <Address>02610350</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>BULLET_NUM</Name>
-      <Address>007002B0</Address>
+      <Address>0A0502B0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_EXHAUSTION</Name>
-      <Address>007000F0</Address>
+      <Address>0A0500F0</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>PHANTOM_EDGE_RGB</Name>
-      <Address>00700280</Address>
+      <Address>0A050280</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_IS_CHRONOS_TRIGGER</Name>
-      <Address>00700030</Address>
+      <Address>0A050030</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>CFG_ENABLE_INSTANT_SLASH_DURING_CHRONOS</Name>
-      <Address>00700020</Address>
+      <Address>0A050020</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>size_add</Name>
@@ -3550,15 +5774,39 @@ showInfoMessage()
     </SymbolEntry>
     <SymbolEntry>
       <Name>MOVEMENT_DIST_MULT</Name>
-      <Address>00700220</Address>
+      <Address>0A050220</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>even_bullet</Name>
-      <Address>006703D0</Address>
+      <Address>0A050380</Address>
     </SymbolEntry>
     <SymbolEntry>
       <Name>ENABLE_RAINBOW</Name>
-      <Address>00700290</Address>
+      <Address>0A050290</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>light_matrix_e</Name>
+      <Address>0A050310</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>color_balance_m</Name>
+      <Address>00860440</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>GParam_HSCV</Name>
+      <Address>008604B0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>GParam_MATRIX</Name>
+      <Address>008604C0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>GParam_REPLACE_ENABLE</Name>
+      <Address>008604E0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>GParam_REPLACE</Name>
+      <Address>008604F0</Address>
     </SymbolEntry>
   </UserdefinedSymbols>
 </CheatTable>
